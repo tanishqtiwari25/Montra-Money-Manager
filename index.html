@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montra - Money Manager</title>
+    <!-- Google Fonts & Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Live Animated Neon Background -->
+    <div class="neon-bg"></div>
+
+    <div class="auth-card">
+        <!-- Header / Brand Logo -->
+        <div class="brand">
+            <span class="material-icons brand-icon">account_balance_wallet</span>
+            <h2>Montra</h2>
+        </div>
+
+        <!-- Material UI Tabs -->
+        <div class="mui-tabs">
+            <button type="button" id="loginTabBtn" class="mui-tab active">LOG IN</button>
+            <button type="button" id="signupTabBtn" class="mui-tab">SIGN UP</button>
+            <div class="tab-indicator" id="tabIndicator"></div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="auth-form active">
+            <div class="mui-input-field">
+                <input type="text" id="login-email" required placeholder=" ">
+                <label for="login-email">Username or Email</label>
+            </div>
+            <div class="mui-input-field">
+                <input type="password" id="login-password" required placeholder=" ">
+                <label for="login-password">Password</label>
+            </div>
+            <div class="form-actions">
+                <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+            <button type="submit" class="mui-btn mui-btn-primary">LOG IN</button>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="signupForm" class="auth-form">
+            <div class="mui-input-field">
+                <input type="text" id="signup-name" required placeholder=" ">
+                <label for="signup-name">Full Name</label>
+            </div>
+            <div class="mui-input-field">
+                <input type="email" id="signup-email" required placeholder=" ">
+                <label for="signup-email">Email Address</label>
+            </div>
+            <div class="mui-input-field">
+                <input type="password" id="signup-password" required placeholder=" ">
+                <label for="signup-password">Password</label>
+            </div>
+            <button type="submit" class="mui-btn mui-btn-primary">CREATE ACCOUNT</button>
+        </form>
+
+        <!-- Divider -->
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <!-- Social Auth Buttons -->
+        <div class="social-auth">
+            <button type="button" class="mui-btn mui-btn-outlined">
+                <svg class="social-icon" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
+                    <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                    <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/>
+                    <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
+                </svg>
+                Google
+            </button>
+            <button type="button" class="mui-btn mui-btn-outlined">
+                <span class="material-icons social-icon">call</span>
+                Phone
+            </button>
+        </div>
+    </div>
+
+    <!-- Standalone Script Integration -->
+    <script src="script.js"></script>
+</body>
+</html>
