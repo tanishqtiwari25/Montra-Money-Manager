@@ -23,6 +23,7 @@ body {
     align-items: center;
     overflow: hidden;
     position: relative;
+    padding: 16px;
 }
 
 /* Dynamic Live Neon Background Animation */
@@ -61,6 +62,7 @@ body {
     border-radius: 16px;
     padding: 32px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 229, 255, 0.15);
+    transition: all 0.3s ease;
 }
 
 .brand {
@@ -232,6 +234,7 @@ body {
 }
 
 .mui-btn-outlined {
+    flex: 1;
     background: transparent;
     border: 1px solid var(--mui-border);
     color: var(--mui-text-primary);
@@ -251,4 +254,51 @@ body {
     width: 18px;
     height: 18px;
     font-size: 18px;
+}
+
+/* ========================================= */
+/* MOBILE RESPONSIVE MEDIA QUERIES           */
+/* ========================================= */
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+        overflow-y: auto; /* Small screens par vertical scroll allow karega agar height choti ho */
+    }
+
+    .auth-card {
+        padding: 24px 18px;
+        border-radius: 12px;
+    }
+
+    .brand-icon {
+        font-size: 28px;
+    }
+
+    .brand h2 {
+        font-size: 20px;
+    }
+
+    .mui-input-field input {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    /* Mobile keyboard open hone par label text overlap nahi karega */
+    .mui-input-field input:focus ~ label,
+    .mui-input-field input:not(:placeholder-shown) ~ label {
+        top: -2px;
+        font-size: 11px;
+    }
+
+    /* Mobile screens par Google & Phone button ek ke niche ek stacked ho jayenge */
+    .social-auth {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mui-btn-outlined {
+        width: 100%;
+        padding: 10px;
+    }
 }
