@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts & Icons for Mobile View -->
+    <!-- Google Fonts & Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
@@ -35,7 +35,6 @@
             overflow-x: hidden;
         }
 
-        /* Helper Classes */
         .desktop-only { display: flex; }
         .mobile-only { display: none; }
 
@@ -110,16 +109,6 @@
         .header h1 {
             font-size: 28px;
             font-weight: 700;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: var(--border-color);
-            border: none;
-            color: #fff;
-            padding: 8px;
-            border-radius: 6px;
-            cursor: pointer;
         }
 
         .btn-add {
@@ -305,10 +294,7 @@
         .toggle-btn.active-expense { background: #ef4444; color: #fff; }
         .toggle-btn.active-income { background: #10b981; color: #fff; }
 
-        /* ========================================= */
-        /* MOBILE VIEW STYLES (< 768px)              */
-        /* ========================================= */
-
+        /* MOBILE VIEW STYLES (< 768px) */
         @media (max-width: 767px) {
             .desktop-only { display: none !important; }
             .mobile-only { display: block; }
@@ -323,7 +309,6 @@
                 padding: 16px;
             }
 
-            /* Neon BG Accent */
             .neon-bg {
                 position: fixed;
                 top: 0; left: 0; width: 100vw; height: 100vh;
@@ -332,7 +317,6 @@
                 pointer-events: none;
             }
 
-            /* Header Mobile */
             .mobile-header {
                 display: flex;
                 justify-content: space-between;
@@ -366,7 +350,6 @@
                 display: flex; align-items: center; justify-content: center;
             }
 
-            /* Balance Wave Card */
             .glass-card {
                 background: rgba(20, 26, 43, 0.7);
                 border: 1px solid rgba(0, 229, 255, 0.2);
@@ -417,7 +400,6 @@
                 background: var(--cyan-glow);
             }
 
-            /* Mobile Transaction List */
             .transaction-section {
                 display: flex;
                 flex-direction: column;
@@ -448,9 +430,9 @@
             .tx-title { font-size: 15px; font-weight: 600; }
             .tx-sub { font-size: 12px; color: #9ca3af; }
             .tx-amount { font-size: 15px; font-weight: 600; }
-            .tx-amount.negative { color: #10b981; }
+            .tx-amount.positive { color: #10b981; }
+            .tx-amount.negative { color: #ef4444; }
 
-            /* Floating Glass Bottom Nav */
             .glass-bottom-nav {
                 display: flex;
                 position: fixed;
@@ -505,10 +487,8 @@
 </head>
 <body>
 
-    <!-- Neon Glow Overlay (Mobile Only) -->
     <div class="neon-bg mobile-only"></div>
 
-    <!-- Desktop Sidebar -->
     <aside class="sidebar desktop-only">
         <div class="brand">
             <i data-lucide="bar-chart-2" style="color:#10b981;"></i> Montra
@@ -522,20 +502,18 @@
         </ul>
     </aside>
 
-    <!-- Main Content Container -->
     <main class="main-content">
-        
-        <!-- DESKTOP VIEW LAYOUT -->
+        <!-- DESKTOP VIEW -->
         <div class="desktop-only" style="flex-direction: column; width: 100%;">
             <div class="header">
                 <h1>Dashboard</h1>
-                <button class="btn-add open-drawer-trigger">+ Add</button>
+                <button class="btn-add open-drawer-trigger">+ Add Transaction</button>
             </div>
 
             <div class="metrics-grid">
                 <div class="card">
                     <div class="card-title">Total Balance</div>
-                    <div class="card-amount">$24,850</div>
+                    <div class="card-amount" id="totalBalanceDisplay">$24,850</div>
                     <span class="badge badge-green">↗ +5.2%</span>
                 </div>
                 <div class="card">
@@ -563,7 +541,7 @@
                                     <th style="text-align: right;">Amount</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="desktopTxBody">
                                 <tr>
                                     <td>Oct 25</td>
                                     <td>Starbucks</td>
@@ -582,12 +560,6 @@
                                     <td><span class="category-tag">💼 Salary</span></td>
                                     <td class="amount-plus" style="text-align: right;">+$3,250.00</td>
                                 </tr>
-                                <tr>
-                                    <td>Oct 22</td>
-                                    <td>Starbucks</td>
-                                    <td><span class="category-tag">🍔 Food</span></td>
-                                    <td class="amount-minus" style="text-align: right;">-$12.50</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -595,12 +567,14 @@
 
                 <div class="card">
                     <h3>Financial Trends</h3>
-                    <canvas id="financialChart" style="margin-top:20px; width:100%; height:240px;"></canvas>
+                    <div style="position: relative; height: 240px; width: 100%;">
+                        <canvas id="financialChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- MOBILE VIEW LAYOUT -->
+        <!-- MOBILE VIEW -->
         <div class="mobile-only">
             <header class="mobile-header">
                 <div class="company-badge">
@@ -634,7 +608,7 @@
                 </div>
             </div>
 
-            <div class="transaction-section">
+            <div class="transaction-section" id="mobileTxList">
                 <div class="transaction-item">
                     <div class="tx-icon icon-orange">
                         <span class="material-icons">restaurant</span>
@@ -643,7 +617,7 @@
                         <div class="tx-title">Food</div>
                         <div class="tx-sub">Transaction: 2 Mar 23</div>
                     </div>
-                    <div class="tx-amount">$4,850.00</div>
+                    <div class="tx-amount negative">-$4,850.00</div>
                 </div>
 
                 <div class="transaction-item">
@@ -654,46 +628,23 @@
                         <div class="tx-title">Salary</div>
                         <div class="tx-sub">Transaction: Today</div>
                     </div>
-                    <div class="tx-amount negative">-$153.00</div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="tx-icon icon-purple">
-                        <span class="material-icons">shopping_bag</span>
-                    </div>
-                    <div class="tx-details">
-                        <div class="tx-title">Shopping</div>
-                        <div class="tx-sub">Transaction: Today</div>
-                    </div>
-                    <div class="tx-amount negative">-$20.95</div>
+                    <div class="tx-amount positive">+$153.00</div>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- Glass Floating Bottom Navigation Bar (Mobile Only) -->
     <nav class="glass-bottom-nav mobile-only">
-        <button class="nav-btn active">
-            <span class="material-icons">home</span>
-        </button>
-        <button class="nav-btn">
-            <span class="material-icons">bar_chart</span>
-        </button>
+        <button class="nav-btn active"><span class="material-icons">home</span></button>
+        <button class="nav-btn"><span class="material-icons">bar_chart</span></button>
         <div class="fab-wrapper">
-            <button class="fab-btn open-drawer-trigger">
-                <span class="material-icons">add</span>
-            </button>
+            <button class="fab-btn open-drawer-trigger"><span class="material-icons">add</span></button>
         </div>
-        <button class="nav-btn">
-            <span class="material-icons">credit_card</span>
-        </button>
-        <button class="nav-btn">
-            <span class="material-icons">person_outline</span>
-        </button>
+        <button class="nav-btn"><span class="material-icons">credit_card</span></button>
+        <button class="nav-btn"><span class="material-icons">person_outline</span></button>
     </nav>
 
-    <!-- Slide-over Add Transaction Drawer (Universal) -->
+    <!-- Drawer Panel -->
     <div class="drawer-overlay" id="drawerOverlay">
         <div class="drawer">
             <div class="drawer-header">
@@ -701,48 +652,44 @@
                 <i data-lucide="x" class="drawer-close" id="closeDrawerBtn"></i>
             </div>
 
-            <div class="form-group">
-                <label>Transaction Type</label>
-                <div class="toggle-btn-group">
-                    <button class="toggle-btn active-expense" id="typeExpense">Expense</button>
-                    <button class="toggle-btn" id="typeIncome">Income</button>
+            <form id="transactionForm" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <div class="toggle-btn-group">
+                        <button type="button" class="toggle-btn active-expense" id="typeExpense">Expense</button>
+                        <button type="button" class="toggle-btn" id="typeIncome">Income</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Category</label>
-                <select class="form-control" id="transCategory">
-                    <option value="Food">Food</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Utilities">Utilities</option>
-                </select>
-            </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Category</label>
+                    <select class="form-control" id="transCategory">
+                        <option value="Food">Food</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Utilities">Utilities</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label>Amount ($)</label>
-                <input type="number" class="form-control" placeholder="0.00" id="transAmount">
-            </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Amount ($)</label>
+                    <input type="number" step="0.01" class="form-control" placeholder="0.00" id="transAmount" required>
+                </div>
 
-            <div class="form-group">
-                <label>Short Note</label>
-                <input type="text" class="form-control" placeholder="e.g., Lunch with team" id="transNote">
-            </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Short Note</label>
+                    <input type="text" class="form-control" placeholder="e.g., Coffee" id="transNote" required>
+                </div>
 
-            <div class="form-group">
-                <label>Detailed Description</label>
-                <textarea class="form-control" rows="3" placeholder="Optional detailed notes..." id="transDesc"></textarea>
-            </div>
-
-            <button class="btn-add" style="margin-top:auto; width:100%; font-size:16px;">Save Transaction</button>
+                <button type="submit" id="saveTxBtn" class="btn-add" style="margin-top:24px; width:100%; font-size:16px;">Save Transaction</button>
+            </form>
         </div>
     </div>
 
-    <!-- JavaScript Script -->
     <script>
         lucide.createIcons();
 
-        // Chart.js Configuration
+        // Chart Initialization
         const ctx = document.getElementById('financialChart');
         if (ctx) {
             new Chart(ctx, {
@@ -750,20 +697,8 @@
                 data: {
                     labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
                     datasets: [
-                        {
-                            label: 'Income',
-                            data: [4200, 5000, 4800, 5800, 6500],
-                            borderColor: '#10b981',
-                            tension: 0.4,
-                            fill: false
-                        },
-                        {
-                            label: 'Expense',
-                            data: [2800, 3100, 2900, 3500, 3200],
-                            borderColor: '#ef4444',
-                            tension: 0.4,
-                            fill: false
-                        }
+                        { label: 'Income', data: [4200, 5000, 4800, 5800, 6500], borderColor: '#10b981', tension: 0.4 },
+                        { label: 'Expense', data: [2800, 3100, 2900, 3500, 3200], borderColor: '#ef4444', tension: 0.4 }
                     ]
                 },
                 options: {
@@ -778,32 +713,72 @@
             });
         }
 
-        // Drawer Controls
+        // State Management
+        let currentType = 'Expense';
         const drawerOverlay = document.getElementById('drawerOverlay');
         const openTriggers = document.querySelectorAll('.open-drawer-trigger');
         const closeBtn = document.getElementById('closeDrawerBtn');
-
-        openTriggers.forEach(btn => {
-            btn.addEventListener('click', () => drawerOverlay.style.display = 'flex');
-        });
-
-        closeBtn.addEventListener('click', () => drawerOverlay.style.display = 'none');
-        drawerOverlay.addEventListener('click', (e) => {
-            if (e.target === drawerOverlay) drawerOverlay.style.display = 'none';
-        });
-
-        // Toggle Buttons logic
         const typeExpense = document.getElementById('typeExpense');
         const typeIncome = document.getElementById('typeIncome');
+        const txForm = document.getElementById('transactionForm');
+
+        openTriggers.forEach(btn => btn.addEventListener('click', () => drawerOverlay.style.display = 'flex'));
+        closeBtn.addEventListener('click', () => drawerOverlay.style.display = 'none');
+        drawerOverlay.addEventListener('click', (e) => { if (e.target === drawerOverlay) drawerOverlay.style.display = 'none'; });
 
         typeExpense.addEventListener('click', () => {
+            currentType = 'Expense';
             typeExpense.classList.add('active-expense');
             typeIncome.classList.remove('active-income');
         });
 
         typeIncome.addEventListener('click', () => {
+            currentType = 'Income';
             typeIncome.classList.add('active-income');
             typeExpense.classList.remove('active-expense');
+        });
+
+        // Form Submit Handler
+        txForm.addEventListener('submit', () => {
+            const amount = parseFloat(document.getElementById('transAmount').value);
+            const note = document.getElementById('transNote').value;
+            const category = document.getElementById('transCategory').value;
+            const isIncome = currentType === 'Income';
+
+            // Add Desktop Table Row
+            const desktopBody = document.getElementById('desktopTxBody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>Today</td>
+                <td>${note}</td>
+                <td><span class="category-tag">${category}</span></td>
+                <td class="${isIncome ? 'amount-plus' : 'amount-minus'}" style="text-align: right;">
+                    ${isIncome ? '+' : '-'}$${amount.toFixed(2)}
+                </td>
+            `;
+            desktopBody.prepend(tr);
+
+            // Add Mobile List Item
+            const mobileList = document.getElementById('mobileTxList');
+            const div = document.createElement('div');
+            div.className = 'transaction-item';
+            div.innerHTML = `
+                <div class="tx-icon ${isIncome ? 'icon-green' : 'icon-orange'}">
+                    <span class="material-icons">${isIncome ? 'work' : 'shopping_bag'}</span>
+                </div>
+                <div class="tx-details">
+                    <div class="tx-title">${note}</div>
+                    <div class="tx-sub">Transaction: Today</div>
+                </div>
+                <div class="tx-amount ${isIncome ? 'positive' : 'negative'}">
+                    ${isIncome ? '+' : '-'}$${amount.toFixed(2)}
+                </div>
+            `;
+            mobileList.prepend(div);
+
+            // Close & Reset
+            drawerOverlay.style.display = 'none';
+            txForm.reset();
         });
     </script>
 </body>
