@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (token) {
                         localStorage.setItem("authToken", token);
                     }
+                    window.location.href = "dashboard.html";
                 } else {
                     alert(result.data.message || result.data.error || `Login Failed (Status: ${result.status})`);
                 }
