@@ -1,6 +1,6 @@
 export const config = {
   // Backend API URL (agar .env me nahi milta toh default fallback use karega)
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'https://montra-apis-w8pd.onrender.com/swagger ',
   
   // App settings
   appName: import.meta.env.VITE_APP_NAME || 'Finance Tracker',
