@@ -1,19 +1,28 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { AppRoutes } from './routes/AppRoutes';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Login } from './pages/auth/Login';
+import { Signup } from './pages/auth/Signup';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
-export default function App() {
+// Agar Dashboard component pages/dashboard folder ke andar hai:
+import { Dashboard } from './pages/dashboard/Dashboard'; 
+// (Agar file ka naam Dashboard.jsx hai aur direct pages/ me hai to './pages/Dashboard.jsx' karo)
+
+function App() {
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <ThemeProvider>
-        <AuthProvider>
-          <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased">
-            <AppRoutes />
-          </div>
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
   );
 }
+
+export default App;

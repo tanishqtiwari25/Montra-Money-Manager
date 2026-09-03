@@ -5,7 +5,7 @@ import { storage } from '../utils/storage';
 // 1. Axios Instance Setup
 const apiClient = axios.create({
   baseURL: config.apiBaseUrl,
-  timeout: 10000, // 10 seconds timeout
+  timeout: 60000, // Cold start handling ke liye 60 sec
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -31,19 +31,20 @@ apiClient.interceptors.request.use(
 // 3. Response Interceptor: Handle API Success & Global Errors
 apiClient.interceptors.response.use(
   (response) => {
-    // Directly return response payload data
-    return response.data;
+    // Explicitly return data object
+    return response.data !== undefined ? response.data : response;
   },
   (error) => {
     const status = error.response ? error.response.status : null;
 
-    // Handle 401 Unauthorized (Expired or invalid token)
+    // Handle 401 Unauthorized
     if (status === 401) {
       storage.remove(config.storageKeys.AUTH_TOKEN);
       storage.remove(config.storageKeys.USER_DATA);
 
-      // Redirect to login if user is not already on login or register page
-      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+      const currentPath = window.location.pathname.toLowerCase();
+      // Added '/signup' to prevent reload on auth pages
+      if (!currentPath.includes('/login') && !currentPath.includes('/signup') && !currentPath.includes('/register')) {
         window.location.href = '/login';
       }
     }

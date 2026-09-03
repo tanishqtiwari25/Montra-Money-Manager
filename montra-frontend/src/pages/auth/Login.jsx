@@ -1,89 +1,125 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { Input } from '../../components/ui/Input';
-import { Button } from '../../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
+import { authApi } from '../../services/auth.api.js';
+import { config } from '../../config/config.js';
+import { storage } from '../../utils/storage.js';
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    tenantSlug: '',
-    usernameOrEmail: '',
+    email: '',
     password: '',
   });
 
-  const [formError, setFormError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormError('');
+    setLoading(true);
+    setError('');
 
     try {
-      await login(formData);
-      navigate('/dashboard');
+      // 1. Call Login API
+      const res = await authApi.login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log('Login Response Unwrapped:', res);
+
+      // 2. Extract Token and User Details from API response
+      if (res && res.token) {
+        // Save Auth Token
+        storage.set(config.storageKeys.AUTH_TOKEN, res.token);
+
+        // Save User Info (fullName & username)
+        const userData = {
+          fullName: res.fullName,
+          username: res.username,
+        };
+        storage.set(config.storageKeys.USER_DATA, userData);
+
+        // 3. Redirect to Dashboard
+        navigate('/dashboard');
+      } else {
+        setError('Login successful, but token was not returned.');
+      }
     } catch (err) {
-      setFormError(err?.message || 'Invalid credentials or server unavailable.');
+      console.error('Login Error:', err);
+      setError(err.message || 'Invalid email/username or password.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    // Center Screen Wrapper
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 p-4">
-      <div className="w-full max-w-md p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-brand-600 dark:text-brand-500">MONTRA</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Sign in to your financial workspace</p>
-        </div>
+      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <h1 className="text-2xl font-bold text-center text-emerald-500">MONTRA</h1>
+        <p className="text-sm text-center text-slate-400 mt-1 mb-6">
+          Log in to your account
+        </p>
 
-        {formError && (
-          <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs">
-            {formError}
+        {error && (
+          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg text-center">
+            {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Tenant Slug"
-            name="tenantSlug"
-            value={formData.tenantSlug}
-            onChange={handleChange}
-            placeholder="organization-slug"
-            required
-          />
-          <Input
-            label="Username or Email"
-            name="usernameOrEmail"
-            value={formData.usernameOrEmail}
-            onChange={handleChange}
-            placeholder="user@montra.io"
-            required
-          />
-          <Input
-            label="Password"
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="••••••••"
-            required
-          />
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              Email Address / Username <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="email"
+              placeholder="name@domain.com or username"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
 
-          <Button type="submit" className="w-full" isLoading={isLoading}>
-            Sign In
-          </Button>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              Password <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 text-white font-semibold rounded-lg transition-colors mt-2 flex items-center justify-center"
+          >
+            {loading ? 'Logging in...' : 'Log In'}
+          </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-center text-slate-500 mt-6">
           Don't have an account?{' '}
-          <Link to="/signup" className="text-brand-600 dark:text-brand-500 font-semibold hover:underline">
+          <a href="/signup" className="text-emerald-500 hover:underline">
             Sign up
-          </Link>
+          </a>
         </p>
       </div>
     </div>
