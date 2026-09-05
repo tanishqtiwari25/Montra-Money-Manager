@@ -5,7 +5,7 @@ import { Signup } from './pages/auth/Signup';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { DashboardLayout } from './layouts/DashboardLayout';
-import { AuthProvider } from './context/AuthContext'; // AuthProvider Import Karo
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
@@ -16,13 +16,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected Routes inside DashboardLayout */}
+          {/* Protected Routes wrapped inside Layout */}
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
           </Route>
 
+          {/* Fallback Catch-all Route */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
