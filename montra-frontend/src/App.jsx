@@ -31,6 +31,7 @@ function App() {
           <Routes>
 
             {/* Public Routes */}
+
             <Route
               path="/login"
               element={<Login />}
@@ -41,7 +42,14 @@ function App() {
               element={<Signup />}
             />
 
+            <Route
+              path="/register"
+              element={<Signup />}
+            />
+
+
             {/* Protected Routes */}
+
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
 
@@ -83,7 +91,9 @@ function App() {
               </Route>
             </Route>
 
-            {/* Default */}
+
+            {/* Default Route */}
+
             <Route
               path="/"
               element={
@@ -94,7 +104,9 @@ function App() {
               }
             />
 
-            {/* Unknown URL */}
+
+            {/* Unknown Route */}
+
             <Route
               path="*"
               element={

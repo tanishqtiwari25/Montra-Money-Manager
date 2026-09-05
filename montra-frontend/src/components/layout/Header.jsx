@@ -20,13 +20,6 @@ export const Header = ({
   } = useTheme();
 
 
-  const handleLogout = () => {
-
-    logout();
-
-  };
-
-
   return (
     <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 flex items-center justify-between sticky top-0 z-10">
 
@@ -71,8 +64,7 @@ export const Header = ({
 
       <div className="flex items-center gap-4">
 
-
-        {/* Theme */}
+        {/* Theme Button */}
 
         <button
           type="button"
@@ -81,9 +73,11 @@ export const Header = ({
           aria-label="Toggle Theme"
           title="Toggle Theme"
         >
+
           {theme === 'dark'
             ? '☀️'
             : '🌙'}
+
         </button>
 
 
@@ -111,7 +105,7 @@ export const Header = ({
           type="button"
           variant="outline"
           size="sm"
-          onClick={handleLogout}
+          onClick={logout}
         >
           Logout
         </Button>

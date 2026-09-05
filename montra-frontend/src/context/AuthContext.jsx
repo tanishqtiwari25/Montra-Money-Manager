@@ -11,14 +11,12 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
 
-  // Get saved user
   const [user, setUser] = useState(() => {
     return storage.get(
       config.storageKeys.USER_DATA
     );
   });
 
-  // Get saved token
   const [token, setToken] = useState(() => {
     return storage.get(
       config.storageKeys.AUTH_TOKEN
@@ -28,9 +26,7 @@ export const AuthProvider = ({ children }) => {
   const [loading] = useState(false);
 
 
-  // =========================
   // LOGIN
-  // =========================
 
   const login = (userData, authToken) => {
 
@@ -49,17 +45,13 @@ export const AuthProvider = ({ children }) => {
   };
 
 
-  // =========================
   // LOGOUT
-  // =========================
 
   const logout = () => {
 
-    // React state clear
     setUser(null);
     setToken(null);
 
-    // LocalStorage clear
     storage.remove(
       config.storageKeys.USER_DATA
     );
@@ -67,6 +59,10 @@ export const AuthProvider = ({ children }) => {
     storage.remove(
       config.storageKeys.AUTH_TOKEN
     );
+
+    // Remove old keys also
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
 
@@ -86,10 +82,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
-// =========================
-// useAuth
-// =========================
 
 export const useAuth = () => {
 

@@ -20,9 +20,7 @@ export const Login = () => {
   const [error, setError] = useState('');
 
 
-  // =========================
-  // INPUT CHANGE
-  // =========================
+  // Input Change
 
   const handleChange = (e) => {
 
@@ -33,9 +31,7 @@ export const Login = () => {
   };
 
 
-  // =========================
-  // SUBMIT
-  // =========================
+  // Submit
 
   const handleSubmit = async (e) => {
 
@@ -58,10 +54,6 @@ export const Login = () => {
       );
 
 
-      // =========================
-      // TOKEN CHECK
-      // =========================
-
       if (!res || !res.token) {
 
         setError(
@@ -72,10 +64,6 @@ export const Login = () => {
       }
 
 
-      // =========================
-      // USER DATA
-      // =========================
-
       const userData = {
         fullName: res.fullName,
         username: res.username,
@@ -83,23 +71,17 @@ export const Login = () => {
       };
 
 
-      // =========================
-      // AUTH CONTEXT LOGIN
-      // =========================
-
       login(
         userData,
         res.token
       );
 
 
-      // =========================
-      // DASHBOARD
-      // =========================
-
       navigate(
         '/dashboard',
-        { replace: true }
+        {
+          replace: true,
+        }
       );
 
     } catch (err) {
@@ -135,8 +117,6 @@ export const Login = () => {
         </p>
 
 
-        {/* Error */}
-
         {error && (
           <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg text-center">
             {error}
@@ -154,10 +134,13 @@ export const Login = () => {
           <div>
 
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-              Email Address / Username{' '}
+
+              Email Address / Username
+
               <span className="text-rose-500">
-                *
+                {' '}*
               </span>
+
             </label>
 
             <input
@@ -178,10 +161,13 @@ export const Login = () => {
           <div>
 
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-              Password{' '}
+
+              Password
+
               <span className="text-rose-500">
-                *
+                {' '}*
               </span>
+
             </label>
 
             <input
@@ -197,16 +183,18 @@ export const Login = () => {
           </div>
 
 
-          {/* Login */}
+          {/* Login Button */}
 
           <button
             type="submit"
             disabled={loading}
             className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 text-white font-semibold rounded-lg transition-colors mt-2 flex items-center justify-center"
           >
+
             {loading
               ? 'Logging in...'
               : 'Log In'}
+
           </button>
 
         </form>
