@@ -1,16 +1,43 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth.js';
-import { Loader } from '@/components/common/Loader.jsx'; // <--- Named import curly braces ke sath
+import {
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
+
+import { useAuth } from '../hooks/useAuth';
+import Loader from './common/Loader';
 
 export const ProtectedRoute = () => {
-  const { isAuthenticated, loading } = useAuth();
 
+  const {
+    isAuthenticated,
+    loading,
+  } = useAuth();
+
+
+  // Loading
   if (loading) {
-    return <Loader />;
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <Loader />
+      </div>
+    );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+
+  // Not logged in
+  if (!isAuthenticated) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
+  }
+
+
+  // Logged in
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
