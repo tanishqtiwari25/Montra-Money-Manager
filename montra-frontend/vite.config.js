@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(({ command }) => ({
+  // Production me GitHub repo name aur local me root path
   base: command === 'build' ? '/Montra-Money-Manager/' : '/',
 
   plugins: [react()],
