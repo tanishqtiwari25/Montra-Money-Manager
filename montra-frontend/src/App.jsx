@@ -27,10 +27,14 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
+
         <Router basename={import.meta.env.BASE_URL}>
+
           <Routes>
 
-            {/* Public Routes */}
+            {/* =========================
+                PUBLIC ROUTES
+            ========================== */}
 
             <Route
               path="/login"
@@ -48,9 +52,12 @@ function App() {
             />
 
 
-            {/* Protected Routes */}
+            {/* =========================
+                PROTECTED ROUTES
+            ========================== */}
 
             <Route element={<ProtectedRoute />}>
+
               <Route element={<DashboardLayout />}>
 
                 <Route
@@ -89,36 +96,43 @@ function App() {
                 />
 
               </Route>
+
             </Route>
 
 
-            {/* Default Route */}
+            {/* =========================
+                DEFAULT ROUTE
+            ========================== */}
 
             <Route
               path="/"
               element={
                 <Navigate
-                  to="/dashboard"
+                  to="/login"
                   replace
                 />
               }
             />
 
 
-            {/* Unknown Route */}
+            {/* =========================
+                UNKNOWN ROUTES
+            ========================== */}
 
             <Route
               path="*"
               element={
                 <Navigate
-                  to="/dashboard"
+                  to="/login"
                   replace
                 />
               }
             />
 
           </Routes>
+
         </Router>
+
       </ThemeProvider>
     </AuthProvider>
   );

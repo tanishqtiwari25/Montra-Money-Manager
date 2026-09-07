@@ -16,9 +16,11 @@ export const config = {
   
   // LocalStorage keys
   storageKeys: {
-    AUTH_TOKEN: 'ft_auth_token',
-    USER_DATA: 'ft_user_data',
-    THEME: 'ft_theme_preference',
-    CURRENCY: 'ft_selected_currency',
+  AUTH_TOKEN: 'ft_auth_token',
+  USER_DATA: 'ft_user_data',
+  TENANT_ID: 'ft_tenant_id',
+  USER_ID: 'ft_user_id',
+  THEME: 'ft_theme_preference',
+  CURRENCY: 'ft_selected_currency',
   },
 };

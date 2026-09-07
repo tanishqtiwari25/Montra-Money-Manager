@@ -1,24 +1,62 @@
-import apiClient from './api';
+import axios from 'axios';
+import { config } from '../config/config';
+import { storage } from '../utils/storage';
+
+const accountsApiClient = axios.create({
+  baseURL: config.apiBaseUrl,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+accountsApiClient.interceptors.request.use((request) => {
+  const token = storage.get(config.storageKeys.AUTH_TOKEN);
+
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return request;
+});
 
 export const accountsApi = {
-  getAccounts: async () => {
-    return await apiClient.get('/accounts');
+  getAccounts: async (tenantId, userId) => {
+    const response = await accountsApiClient.get('/api/Accounts', {
+      headers: {
+        'X-Tenant-Id': tenantId,
+        'X-User-Id': userId,
+      },
+    });
+
+    return response.data;
   },
 
-  getAccountById: async (id) => {
-    return await apiClient.get(`/accounts/${id}`);
+  createAccount: async (tenantId, userId, accountData) => {
+    const response = await accountsApiClient.post(
+      '/api/Accounts',
+      accountData,
+      {
+        headers: {
+          'X-Tenant-Id': tenantId,
+          'X-User-Id': userId,
+        },
+      }
+    );
+
+    return response.data;
   },
 
-  createAccount: async (payload) => {
-    // Expected contract: { name, type, balance, accountNumber }
-    return await apiClient.post('/accounts', payload);
-  },
+  deleteAccount: async (tenantId, userId, id) => {
+    const response = await accountsApiClient.delete(
+      `/api/Accounts/${id}`,
+      {
+        headers: {
+          'X-Tenant-Id': tenantId,
+          'X-User-Id': userId,
+        },
+      }
+    );
 
-  updateAccount: async (id, payload) => {
-    return await apiClient.put(`/accounts/${id}`, payload);
-  },
-
-  deleteAccount: async (id) => {
-    return await apiClient.delete(`/accounts/${id}`);
+    return response.data;
   },
 };

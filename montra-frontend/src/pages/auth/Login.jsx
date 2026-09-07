@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import { authApi } from '../../services/auth.api.js';
 import { useAuth } from '../../hooks/useAuth';
 
 export const Login = () => {
-
   const navigate = useNavigate();
-
   const { login } = useAuth();
-
 
   const [formData, setFormData] = useState({
     email: '',
@@ -19,50 +16,31 @@ export const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-
-  // Input Change
-
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-
-  // Submit
-
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     setLoading(true);
     setError('');
 
-
     try {
-
       const res = await authApi.login({
         email: formData.email,
         password: formData.password,
       });
 
-      console.log(
-        'Login Response Unwrapped:',
-        res
-      );
-
+      console.log('Login Response Unwrapped:', res);
 
       if (!res || !res.token) {
-
-        setError(
-          'Login successful, but token was not returned.'
-        );
-
+        setError('Login successful, but token was not returned.');
         return;
       }
-
 
       const userData = {
         fullName: res.fullName,
@@ -70,44 +48,28 @@ export const Login = () => {
         role: res.role,
       };
 
+      login(userData, res.token);
 
-      login(
-        userData,
-        res.token
-      );
-
-
-      navigate(
-        '/dashboard',
-        {
-          replace: true,
-        }
-      );
-
+      navigate('/dashboard', {
+        replace: true,
+      });
     } catch (err) {
-
-      console.error(
-        'Login Error:',
-        err
-      );
+      console.error('Login Error:', err);
 
       setError(
         err?.message ||
-        'Invalid email/username or password.'
+          'Invalid email/username or password.'
       );
-
     } finally {
-
       setLoading(false);
     }
   };
 
-
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 p-4">
-
       <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
 
+        {/* Logo */}
         <h1 className="text-2xl font-bold text-center text-emerald-500">
           MONTRA
         </h1>
@@ -116,31 +78,24 @@ export const Login = () => {
           Log in to your account
         </p>
 
-
+        {/* Error */}
         {error && (
           <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg text-center">
             {error}
           </div>
         )}
 
-
+        {/* Login Form */}
         <form
           onSubmit={handleSubmit}
           className="space-y-4"
         >
 
-          {/* Email */}
-
+          {/* Email / Username */}
           <div>
-
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-
               Email Address / Username
-
-              <span className="text-rose-500">
-                {' '}*
-              </span>
-
+              <span className="text-rose-500"> *</span>
             </label>
 
             <input
@@ -152,22 +107,13 @@ export const Login = () => {
               required
               className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
             />
-
           </div>
 
-
           {/* Password */}
-
           <div>
-
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-
               Password
-
-              <span className="text-rose-500">
-                {' '}*
-              </span>
-
+              <span className="text-rose-500"> *</span>
             </label>
 
             <input
@@ -179,44 +125,32 @@ export const Login = () => {
               required
               className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
             />
-
           </div>
 
-
           {/* Login Button */}
-
           <button
             type="submit"
             disabled={loading}
             className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 text-white font-semibold rounded-lg transition-colors mt-2 flex items-center justify-center"
           >
-
-            {loading
-              ? 'Logging in...'
-              : 'Log In'}
-
+            {loading ? 'Logging in...' : 'Log In'}
           </button>
 
         </form>
 
-
-        {/* Signup */}
-
+        {/* Signup Link */}
         <p className="text-xs text-center text-slate-500 mt-6">
-
           Don't have an account?{' '}
 
-          <a
-            href={`${import.meta.env.BASE_URL}signup`}
+          <Link
+            to="/signup"
             className="text-emerald-500 hover:underline"
           >
             Sign up
-          </a>
-
+          </Link>
         </p>
 
       </div>
-
     </div>
   );
 };

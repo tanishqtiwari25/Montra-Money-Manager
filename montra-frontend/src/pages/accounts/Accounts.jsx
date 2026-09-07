@@ -1,15 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { accountsApi } from '../../services/accounts.api';
 
-// Named Export add kiya hai (AppRoutes error fix karne ke liye)
 export const Accounts = () => {
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAccounts = async () => {
+      try {
+        const data = await accountsApi.getAccounts();
+
+        console.log('Accounts API Response:', data);
+
+        setAccounts(data);
+      } catch (error) {
+        console.error('Failed to load accounts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAccounts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading accounts...</div>;
+  }
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Accounts</h1>
-      <p className="text-sm text-slate-500 dark:text-slate-400">
-        Manage your connected bank accounts and wallets.
-      </p>
+    <div>
+      <h1>Accounts</h1>
+
+      {accounts.map((account) => (
+        <div key={account.id}>
+          {account.name}
+        </div>
+      ))}
     </div>
   );
 };
-
-export default Accounts;

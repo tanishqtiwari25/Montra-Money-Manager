@@ -1,16 +1,107 @@
-import apiClient from './api';
+import axios from 'axios';
+import { config } from '../config/config';
+import { storage } from '../utils/storage';
 
-export const categoriesApi = {
-  getCategories: async () => {
-    return await apiClient.get('/categories');
+const categoryApiClient = axios.create({
+  baseURL: config.apiBaseUrl,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+categoryApiClient.interceptors.request.use((request) => {
+  const token = storage.get(config.storageKeys.AUTH_TOKEN);
+
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return request;
+});
+
+export const categoryApi = {
+  // GET /api/Category
+  getCategories: async (tenantId, userId, type = '') => {
+    const response = await categoryApiClient.get('/api/Category', {
+      params: type ? { type } : {},
+      headers: {
+        'X-Tenant-Id': tenantId,
+        'X-User-Id': userId,
+      },
+    });
+
+    return response.data;
   },
 
-  createCategory: async (payload) => {
-    // Payload contract: { name, type, color, icon }
-    return await apiClient.post('/categories', payload);
+  // POST /api/Category
+  createCategory: async (tenantId, userId, categoryData) => {
+    const response = await categoryApiClient.post(
+      '/api/Category',
+      categoryData,
+      {
+        headers: {
+          'X-Tenant-Id': tenantId,
+          'X-User-Id': userId,
+        },
+      }
+    );
+
+    return response.data;
   },
 
-  deleteCategory: async (id) => {
-    return await apiClient.delete(`/categories/${id}`);
+  // DELETE /api/Category/{id}
+  deleteCategory: async (tenantId, userId, id) => {
+    const response = await categoryApiClient.delete(
+      `/api/Category/${id}`,
+      {
+        headers: {
+          'X-Tenant-Id': tenantId,
+          'X-User-Id': userId,
+        },
+      }
+    );
+
+    return response.data;
+  },
+
+  // POST /api/Category/subcategory
+  createSubCategory: async (
+    tenantId,
+    userId,
+    subCategoryData
+  ) => {
+    const response = await categoryApiClient.post(
+      '/api/Category/subcategory',
+      subCategoryData,
+      {
+        headers: {
+          'X-Tenant-Id': tenantId,
+          'X-User-Id': userId,
+        },
+      }
+    );
+
+    return response.data;
+  },
+
+  // DELETE /api/Category/subcategory/{subCategoryId}
+  deleteSubCategory: async (
+    tenantId,
+    userId,
+    subCategoryId
+  ) => {
+    const response = await categoryApiClient.delete(
+      `/api/Category/subcategory/${subCategoryId}`,
+      {
+        headers: {
+          'X-Tenant-Id': tenantId,
+          'X-User-Id': userId,
+        },
+      }
+    );
+
+    return response.data;
   },
 };
+
+export default categoryApi;
