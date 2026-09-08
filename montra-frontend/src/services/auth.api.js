@@ -2,15 +2,15 @@ import apiClient from './api.js';
 
 export const authApi = {
   register: async (userData) => {
-    const response = await apiClient.post('/api/Auth/register', userData);
-    return response.data || response;
+    return await apiClient.post('/api/Auth/register', userData);
   },
 
   login: async (credentials) => {
-    const response = await apiClient.post('/api/Auth/login', {
+    return await apiClient.post('/api/Auth/login', {
       usernameOrEmail: credentials.email,
       password: credentials.password,
     });
-    return response.data || response;
   },
 };
+
+export default authApi;

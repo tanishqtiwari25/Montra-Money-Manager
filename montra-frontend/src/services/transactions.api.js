@@ -1,25 +1,34 @@
-import apiClient from './api';
+import apiClient from './api.js';
 
 export const transactionsApi = {
+  // GET /api/Transaction
   getTransactions: async (params = {}) => {
-    // Expected query params: { page, limit, search, category, type, startDate, endDate, sortBy, sortOrder }
-    return await apiClient.get('/transactions', { params });
+    return await apiClient.get('/api/Transaction', {
+      params,
+    });
   },
 
-  getTransactionById: async (id) => {
-    return await apiClient.get(`/transactions/${id}`);
+  // POST /api/Transaction
+  createTransaction: async (transactionData) => {
+    return await apiClient.post(
+      '/api/Transaction',
+      transactionData
+    );
   },
 
-  createTransaction: async (payload) => {
-    // Payload contract: { amount, type, categoryId, accountId, date, description }
-    return await apiClient.post('/transactions', payload);
-  },
-
-  updateTransaction: async (id, payload) => {
-    return await apiClient.put(`/transactions/${id}`, payload);
-  },
-
+  // DELETE /api/Transaction/{id}
   deleteTransaction: async (id) => {
-    return await apiClient.delete(`/transactions/${id}`);
+    return await apiClient.delete(
+      `/api/Transaction/${id}`
+    );
+  },
+
+  // GET /api/Transaction/dashboard
+  getDashboard: async () => {
+    return await apiClient.get(
+      '/api/Transaction/dashboard'
+    );
   },
 };
+
+export default transactionsApi;

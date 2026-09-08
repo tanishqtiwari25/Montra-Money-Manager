@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { categoryApi } from '../services/categories.api';
+import { categoriesApi } from '../services/categories.api';
 import { budgetsApi } from '../services/budgets.api';
 
 export const useBudgets = (

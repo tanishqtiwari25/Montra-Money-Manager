@@ -9,11 +9,13 @@ export const useAccounts = () => {
   const fetchAccounts = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
       const response = await accountsApi.getAccounts();
-      setAccounts(response?.data || response || []);
+      const data = response?.data || response?.items || response || [];
+      setAccounts(Array.isArray(data) ? data : []);
     } catch (err) {
-      setError(err?.message || 'Failed to fetch account list.');
+      setError(err?.message || 'Failed to fetch accounts.');
     } finally {
       setLoading(false);
     }
@@ -30,3 +32,5 @@ export const useAccounts = () => {
     refetch: fetchAccounts,
   };
 };
+
+export default useAccounts;

@@ -1,105 +1,161 @@
-import React from 'react';
-import { StatsCard, Card } from '../../components/ui/Card';
+import React, { useEffect, useState } from 'react';
+import { dashboardApi } from '../../services/dashboard.api';
+import { Card, StatsCard } from '../../components/ui/Card';
 import { formatCurrency } from '../../utils/currencyFormatter';
+import Loader from '../../components/common/Loader';
+import ErrorState from '../../components/common/ErrorState';
+
+const pick = (obj, keys, fallback = 0) => {
+  for (const key of keys) {
+    if (obj?.[key] !== undefined && obj?.[key] !== null) {
+      return obj[key];
+    }
+  }
+  return fallback;
+};
 
 export const Dashboard = () => {
-  // Temporary structured mock presentation state prior to backend API readiness
-  const summary = {
-    totalBalance: 125400.5,
-    totalIncome: 45000.0,
-    totalExpenses: 18250.0,
-    savings: 26750.0,
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const loadDashboard = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await dashboardApi.getDashboard();
+      setData(response?.data || response || {});
+    } catch (err) {
+      setError(err?.message || 'Dashboard data load nahi hui.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const recentTransactions = [
-    { id: 1, title: 'AWS Cloud Services', category: 'Infrastructure', amount: -240.0, date: '2026-03-30' },
-    { id: 2, title: 'Stripe Payout', category: 'Revenue', amount: 4500.0, date: '2026-03-29' },
-    { id: 3, title: 'Office Supplies', category: 'Operations', amount: -150.5, date: '2026-03-28' },
-  ];
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  if (loading) return <Loader />;
+  if (error) {
+    return <ErrorState message={error} onRetry={loadDashboard} />;
+  }
+
+  const source = data?.data || data || {};
+
+  const totalBalance = pick(
+    source,
+    ['totalBalance', 'balance', 'currentBalance'],
+    0
+  );
+
+  const totalIncome = pick(
+    source,
+    ['totalIncome', 'income'],
+    0
+  );
+
+  const totalExpenses = pick(
+    source,
+    ['totalExpenses', 'totalExpense', 'expenses', 'expense'],
+    0
+  );
+
+  const savings = totalIncome - totalExpenses;
+
+  const recentTransactions =
+    source?.recentTransactions ||
+    source?.transactions ||
+    source?.recentTransaction ||
+    [];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Header Section */}
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Financial Dashboard</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Real-time stats and account summary.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Financial Dashboard
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Live financial data from MONTRA backend.
+          </p>
         </div>
 
-        {/* Stats Overview Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatsCard
             title="Total Balance"
-            amount={formatCurrency(summary.totalBalance)}
-            trend="+12.4%"
-            trendLabel="vs last month"
+            amount={formatCurrency(Number(totalBalance) || 0)}
           />
+
           <StatsCard
             title="Total Income"
-            amount={formatCurrency(summary.totalIncome)}
-            trend="+8.1%"
-            trendLabel="vs last month"
+            amount={formatCurrency(Number(totalIncome) || 0)}
           />
+
           <StatsCard
             title="Total Expenses"
-            amount={formatCurrency(summary.totalExpenses)}
-            trend="-3.2%"
-            trendLabel="vs last month"
+            amount={formatCurrency(Number(totalExpenses) || 0)}
           />
+
           <StatsCard
             title="Net Savings"
-            amount={formatCurrency(summary.savings)}
-            trend="+15.0%"
-            trendLabel="vs last month"
+            amount={formatCurrency(Number(savings) || 0)}
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Recent Activity Table Placeholder */}
-          <Card title="Recent Transactions" className="lg:col-span-2">
+        <Card title="Recent Transactions">
+          {!Array.isArray(recentTransactions) ||
+          recentTransactions.length === 0 ? (
+            <p className="text-sm text-slate-400">
+              No recent transactions available.
+            </p>
+          ) : (
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
-              {recentTransactions.map((tx) => (
-                <div key={tx.id} className="py-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{tx.title}</p>
-                    <span className="text-xs text-slate-400">{tx.category} • {tx.date}</span>
+              {recentTransactions.map((tx, index) => {
+                const amount = Number(tx.amount) || 0;
+                const id = tx.id || tx._id || index;
+
+                return (
+                  <div
+                    key={id}
+                    className="py-3 flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                        {tx.description || tx.title || 'Transaction'}
+                      </p>
+
+                      <span className="text-xs text-slate-400">
+                        {tx.category?.name ||
+                          tx.categoryName ||
+                          tx.category ||
+                          'General'}
+                        {tx.date
+                          ? ` • ${new Date(tx.date).toLocaleDateString()}`
+                          : ''}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`text-sm font-semibold ${
+                        amount > 0
+                          ? 'text-emerald-500'
+                          : 'text-slate-900 dark:text-slate-100'
+                      }`}
+                    >
+                      {amount > 0 ? '+' : ''}
+                      {formatCurrency(amount)}
+                    </span>
                   </div>
-                  <span className={`text-sm font-semibold ${tx.amount > 0 ? 'text-emerald-500' : 'text-slate-900 dark:text-slate-100'}`}>
-                    {tx.amount > 0 ? '+' : ''}{formatCurrency(tx.amount)}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
-          </Card>
-
-          {/* Expense Breakdown Card */}
-          <Card title="Budget Health Overview">
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-600 dark:text-slate-400">Engineering & Tech</span>
-                  <span className="text-slate-900 dark:text-slate-100">75%</span>
-                </div>
-                <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '75%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-600 dark:text-slate-400">Marketing & Sales</span>
-                  <span className="text-slate-900 dark:text-slate-100">42%</span>
-                </div>
-                <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-500 rounded-full" style={{ width: '42%' }}></div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-
+          )}
+        </Card>
       </div>
     </div>
   );
 };
+
+export default Dashboard;
