@@ -95,7 +95,7 @@ Semantic landmarks, labelled fields, real buttons/links, skip link, route focus,
 
 ## Hosting
 
-Root hosting is the default. BrowserRouter requires an SPA fallback to index.html. vercel.json supplies the rewrite for a Vercel project; no deployment was performed. For a GitHub Pages project path, set VITE_BASE_PATH=/Montra-Money-Manager/ in .env.local or the build environment. A host-specific history fallback is still necessary for direct nested routes. The router uses import.meta.env.BASE_URL.
+Root hosting uses BrowserRouter and requires an SPA fallback to index.html. vercel.json supplies that rewrite for Vercel. The repository GitHub Pages workflow builds wealthpilot with VITE_BASE_PATH=/Montra-Money-Manager/ and VITE_ROUTER_MODE=hash, then uploads wealthpilot/dist. Hash routing supports direct navigation and refresh on GitHub Pages without a server-side fallback. The live URL after a successful deployment is https://tanishqtiwari25.github.io/Montra-Money-Manager/#/dashboard. GitHub repository Settings > Pages must use GitHub Actions as its source. Local development defaults to browser routing.
 
 ## Tests
 

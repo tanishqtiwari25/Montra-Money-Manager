@@ -1,9 +1,10 @@
-name: Deploy MONTRA Frontend to GitHub Pages
+name: Deploy WealthPilot to GitHub Pages
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,14 +28,24 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: montra-frontend/package-lock.json
+          cache-dependency-path: wealthpilot/package-lock.json
 
       - name: Install dependencies
-        working-directory: montra-frontend
+        working-directory: wealthpilot
         run: npm ci
 
+      - name: Validate
+        working-directory: wealthpilot
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+
       - name: Build
-        working-directory: montra-frontend
+        working-directory: wealthpilot
+        env:
+          VITE_BASE_PATH: /Montra-Money-Manager/
+          VITE_ROUTER_MODE: hash
         run: npm run build
 
       - name: Setup Pages
@@ -43,7 +54,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: montra-frontend/dist
+          path: wealthpilot/dist
 
   deploy:
     environment:
