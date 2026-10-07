@@ -41,15 +41,16 @@ jobs:
           npm run lint
           npm test
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Build
         working-directory: wealthpilot
         env:
-          VITE_BASE_PATH: /Montra-Money-Manager/
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
           VITE_ROUTER_MODE: hash
         run: npm run build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
