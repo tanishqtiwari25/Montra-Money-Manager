@@ -1,0 +1,10 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { useTheme } from '@features/toggle-theme';
+import { AppRouter, AppProviders, ErrorBoundary } from './index';
+import '@shared/theme';
+import './styles/global.css';
+useTheme.getState().initialize();
+const element = document.getElementById('root');
+if (!element) throw new Error('Application root element is missing.');
+ReactDOM.createRoot(element).render(<React.StrictMode><ErrorBoundary><AppProviders><AppRouter /></AppProviders></ErrorBoundary></React.StrictMode>);

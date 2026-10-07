@@ -1,0 +1,7 @@
+import { Card, Badge, ProgressBar } from '@shared/ui';
+import { formatMoney, formatDate } from '@shared/lib';
+import type { Loan } from '../model/types';
+export function LoanCard({ loan }: { loan: Loan }) {
+  const progress = loan.principalPaise ? (1 - loan.outstandingPaise / loan.principalPaise) * 100 : 100;
+  return <Card><div className="flex items-start justify-between gap-4"><div><p className="text-sm text-muted">{loan.lender}</p><h3 className="mt-1 text-lg font-semibold text-ink">{loan.name}</h3></div><Badge tone={loan.status === 'active' ? 'warning' : 'positive'}>{loan.status}</Badge></div><p className="mt-6 text-3xl font-semibold text-ink">{formatMoney(loan.outstandingPaise)}</p><p className="mb-5 mt-1 text-sm text-muted">remaining of {formatMoney(loan.principalPaise)}</p><ProgressBar value={progress} label={loan.name + ' repayment progress'} tone="positive" /><dl className="mt-5 grid grid-cols-2 gap-5 text-sm"><div><dt className="text-muted">Monthly EMI</dt><dd className="mt-1 font-semibold text-ink">{formatMoney(loan.emiPaise)}</dd></div><div><dt className="text-muted">Interest rate</dt><dd className="mt-1 font-semibold text-ink">{loan.annualInterestRate}% p.a.</dd></div><div><dt className="text-muted">Next payment</dt><dd className="mt-1 font-semibold text-ink">{formatDate(loan.nextDueDate)}</dd></div><div><dt className="text-muted">Time remaining</dt><dd className="mt-1 font-semibold text-ink">{loan.remainingMonths} months</dd></div></dl></Card>;
+}

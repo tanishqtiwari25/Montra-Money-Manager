@@ -1,0 +1,14 @@
+:root {
+  color-scheme: light;
+  --canvas: 245 247 251; --panel: 255 255 255; --ink: 16 27 54; --muted: 82 96 119; --line: 224 230 239;
+  --positive: #047857; --negative: #be123c; --warning: #92400e;
+  --radius-card: 1.25rem; --radius-control: .75rem;
+  --shadow-card: 0 8px 32px rgb(16 27 54 / .06);
+  --space-unit: .25rem; --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+.dark {
+  color-scheme: dark;
+  --canvas: 10 17 32; --panel: 18 29 49; --ink: 239 244 252; --muted: 168 183 204; --line: 43 57 80;
+  --positive: #6ee7b7; --negative: #fda4af; --warning: #fcd34d;
+  --shadow-card: 0 8px 32px rgb(0 0 0 / .18);
+}

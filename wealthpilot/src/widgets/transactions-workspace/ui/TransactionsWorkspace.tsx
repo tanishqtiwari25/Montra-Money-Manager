@@ -1,0 +1,20 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { transactionApi, TransactionRow, type TransactionQuery, type Transaction } from '@entities/transaction';
+import { useAccounts } from '@entities/account';
+import { useCards } from '@entities/card';
+import { useCategories, categoryName } from '@entities/category';
+import { AddTransaction } from '@features/add-transaction';
+import { EditTransaction } from '@features/edit-transaction';
+import { TransactionFilters } from '@features/filter-transactions';
+import { PageHeader, Card, Button, AsyncState, EmptyState } from '@shared/ui';
+import { errorMessage } from '@shared/lib';
+export function TransactionsWorkspace() {
+  const location = useLocation(); const [params] = useSearchParams(); const search = params.get('search') ?? ''; const [query, setQuery] = useState<TransactionQuery>({ search, sort: 'date-desc' }); const [page, setPage] = useState(1); const [items, setItems] = useState<Transaction[]>([]); const [total, setTotal] = useState(0); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null); const [revision, setRevision] = useState(0);
+  const accounts = useAccounts(); const cards = useCards(); const categories = useCategories();
+  useEffect(() => { setQuery({ search, sort: 'date-desc' }); setPage(1); }, [search, location.key]);
+  useEffect(() => { const controller = new AbortController(); setLoading(true); setError(null); void transactionApi.list({ ...query, page, pageSize: 12 }, { signal: controller.signal }).then(result => { setItems(result.items); setTotal(result.total); setLoading(false); }).catch((cause: unknown) => { if (!controller.signal.aborted) { setError(errorMessage(cause)); setLoading(false); } }); return () => controller.abort(); }, [query, page, revision]);
+  const refresh = useCallback(() => setRevision(value => value + 1), []);
+  const pages = Math.max(1, Math.ceil(total / 12)); const dataError = error ?? accounts.error ?? cards.error ?? categories.error;
+  return <div className="space-y-6"><PageHeader eyebrow="YOUR MONEY IN MOTION" title="Every little transaction." description="Know what came in, what went out, and which account made it happen." action={<AddTransaction onSaved={refresh} />} /><Card><TransactionFilters key={location.key} initialSearch={search} onApply={next => { setQuery(next); setPage(1); }} categories={categories.items.map(category => ({ id: category.id, label: category.name }))} paymentMethods={[...accounts.items.filter(account => account.type !== 'investment').map(account => ({ id: account.id, label: account.institution + ' · ' + account.name })), ...cards.items.map(card => ({ id: card.id, label: card.name }))]} /><div className="mt-6 border-t border-line pt-2"><AsyncState loading={loading || !accounts.loaded || !cards.loaded || !categories.loaded} error={dataError} onRetry={() => { refresh(); void accounts.load(true); void cards.load(true); void categories.load(true); }}>{items.length ? items.map(transaction => <TransactionRow key={transaction.id} transaction={transaction} categoryName={categoryName(categories.items, transaction.categoryId)} paymentLabel={cards.items.find(card => card.id === transaction.paymentMethodId)?.name ?? accounts.items.find(account => account.id === transaction.paymentMethodId)?.institution ?? 'Payment account'} action={<EditTransaction transaction={transaction} onSaved={refresh} />} />) : <EmptyState title="No matching transactions" description="Try another search or reset your filters." />}</AsyncState></div><div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4"><p className="text-xs text-muted">{total} transactions · Page {page} of {pages}</p><div className="flex gap-2"><Button variant="secondary" disabled={page <= 1 || loading} onClick={() => setPage(value => value - 1)}>Previous</Button><Button variant="secondary" disabled={page >= pages || loading} onClick={() => setPage(value => value + 1)}>Next</Button></div></div></Card></div>;
+}

@@ -1,0 +1,1 @@
+export function Skeleton({ className = 'h-24 w-full', label = 'Loading' }: { className?: string; label?: string }) { return <div role="status" className={'animate-pulse rounded-control bg-canvas motion-reduce:animate-none ' + className}><span className="sr-only">{label}</span></div>; }

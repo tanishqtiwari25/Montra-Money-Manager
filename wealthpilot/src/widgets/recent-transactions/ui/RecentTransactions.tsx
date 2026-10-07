@@ -1,0 +1,8 @@
+import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
+import { useTransactions, TransactionRow } from '@entities/transaction';
+import { useAccounts } from '@entities/account';
+import { useCards } from '@entities/card';
+import { useCategories, categoryName } from '@entities/category';
+import { Card, AsyncState, EmptyState } from '@shared/ui';
+export function RecentTransactions() { const transactions = useTransactions(); const accounts = useAccounts(); const cards = useCards(); const categories = useCategories(); const recent = [...transactions.items].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5); return <Card title="Recent activity" action={<Link className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300" to="/transactions">View all <ArrowUpRight size={14} /></Link>}><AsyncState loading={!transactions.loaded || !accounts.loaded || !cards.loaded || !categories.loaded} error={transactions.error ?? accounts.error ?? cards.error ?? categories.error} onRetry={() => { void transactions.load(true); void accounts.load(true); void cards.load(true); void categories.load(true); }}>{recent.length ? recent.map(transaction => <TransactionRow key={transaction.id} transaction={transaction} categoryName={categoryName(categories.items, transaction.categoryId)} paymentLabel={cards.items.find(card => card.id === transaction.paymentMethodId)?.name ?? accounts.items.find(account => account.id === transaction.paymentMethodId)?.institution ?? 'Payment account'} />) : <EmptyState title="Nothing here yet" description="Add your first transaction to see it here." />}</AsyncState></Card>; }
