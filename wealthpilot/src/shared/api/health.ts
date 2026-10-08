@@ -1,0 +1,2 @@
+import { API_BASE_URL } from '@shared/config';
+export const healthApi = { check: async (kind: 'live' | 'ready', signal?: AbortSignal) => { const origin = new URL(API_BASE_URL, typeof window === 'undefined' ? 'http://localhost' : window.location.origin).origin; const response = await fetch(origin + '/health/' + kind, { signal, credentials: 'omit' }); return { healthy: response.ok, status: response.status, message: await response.text() }; } };

@@ -1,104 +1,52 @@
-# WealthPilot
+# WealthPilot — MONTRA Money Manager frontend
 
-A complete frontend demo of a personal money manager and a scripted personal CFO. Rebuilt from MONTRA using React 18, TypeScript, Vite 5, Tailwind 3, React Router 6, Zustand, Recharts, Framer Motion, Lucide, React Hook Form and Zod. Inter is bundled locally. No original MONTRA files or authentication configuration were changed or copied.
+React 18 + TypeScript + Vite 5 frontend connected to the MONTRA API. Production uses real authenticated data. Demo adapters run only when explicitly enabled with VITE_DATA_MODE=demo.
 
-## Run
+## Run and validate
 
-Requires Node.js 20.19+ or a compatible newer release and npm.
+Requires Node.js 20.19+ and npm. Run npm ci, npm run dev. Vite normally opens http://localhost:3000. Run npm run typecheck, npm run lint, npm test, npm run build and npm run preview to validate a production build.
 
-~~~sh
-npm ci
-npm run dev
-~~~
+Default backend: https://montra-apis-w8pd.onrender.com/api/v1. Override VITE_API_BASE_URL in .env.local when using another server. See .env.example. Frontend origins must be allowed by backend CORS; the deployed https://montra.realtanishqtiwari.in origin was verified. Localhost and 127.0.0.1 use the Vite API proxy automatically when VITE_API_BASE_URL is unset. Explicit direct API URLs require that local origin in backend CORS. Restart Vite after changing proxy configuration. Set VITE_ROUTER_MODE=hash for GitHub Pages and static hosting. VITE_BASE_PATH controls subdirectory deployment.
 
-Open the local URL printed by Vite (normally http://localhost:3000). To check and preview a production build:
+## Authentication
 
-~~~sh
-npm run typecheck
-npm run lint
-npm test
-npm run build
-npm run preview
-~~~
+- /login, /signup and /recover are public. All financial routes require a session.
+- Login/register send the exact identity payload, credentials: include and X-WealthPilot-CSRF: 1.
+- Access tokens stay in memory. Refresh uses the backend HttpOnly cookie. Parallel 401s share one refresh and retry once; offline refresh failures do not silently clear the session.
+- Refresh is serialized within a tab and, where navigator.locks exists, across tabs. Browsers without Web Locks guarantee only within-tab serialization.
+- Signup displays the private recovery code until the user acknowledges saving it. Recovery and password changes show replacement codes without persisting them in browser storage.
+- Settings supports password change, identity check and logout. Financial stores clear when the session owner changes; late responses cannot restore another owner’s data.
+- Cross-site refresh cookies require Auth__CrossSiteCookies=true, SameSite=None/Secure and browser cookie support. A same-site API subdomain is preferable if browsers block third-party cookies.
 
-The ZIP includes source, configs, the dependency lockfile, portable behavior tests and build output. It excludes node_modules. No backend or credentials are needed.
+## Financial features
 
-## Routes and behavior
+- Dashboard uses complete server summaries, trends, spending categories and upcoming bills.
+- Transactions support filters, sorting, paged history loading, add/edit/delete, debit-linked transfers, exact rupee-to-paise conversion and viewed ETags for conflict-safe edits.
+- Manage finances supports account/card/category/loan create, edit and archive, budget create/update/remove, card bill creation, bill-selectable repayment, explicit principal/interest/fees loan payments and reminders.
+- Opening balances and positions are immutable. Edit forms ask for the original opening amount rather than assuming the current balance is the opening balance.
+- Goals support creation, contribution, achievement acknowledgement and purchase recording. Settings provides contribution history.
+- Reports fetch complete monthly/yearly server totals and category trends, and export CSV.
+- Server notification read state, history and complete unread count are wired. Financial alerts and reminder scheduling belong to the backend.
+- Profile uses contact email; changing it does not change login identity. Zero planning income/targets are supported.
+- New accounts start empty. Onboarding prompts for opening accounts instead of inventing sample financial data.
+- Reconciliation is available through Account audit; settings includes reminders, card bills, goal contributions and notification history.
 
-- /dashboard: five KPIs, 6/12-month income/expense trend, category donut, cash-flow bars, recent activity, goals, emergency reserve, upcoming bills and embedded CFO chat.
-- /transactions: search/date/category/account/card/type/amount filters, sorting, pagination, validated add/edit forms and payment badges.
-- /accounts: three banks, credit/debit cards, wallet, cash, investments, utilization/due dates and payment-method spending.
-- /budgets: category usage and over-budget warnings.
-- /loans: outstanding principal, rate, EMI, due date, payoff progress and months remaining.
-- /goals: creation, icons/images, contribution, completion estimate, affordability, celebration and purchased-goal expense.
-- /reports: monthly/yearly totals, category trends, data tables and a UI-only export preview.
-- /settings: profile, salary/savings/emergency targets, currency, saved theme preference and demo reset.
-- /ask-cfo: the full conversation and financial snapshot. Dashboard and full-page chat share the same in-memory conversation.
-- Bell: read/unread goal, bill, budget and reminder notifications.
+## CFO
 
-The fixed demo snapshot is 7 October 2026, with history from November 2025 through October 2026. Times render in Asia/Kolkata. Account balances are snapshot balances; transaction additions/edits/deletions apply deltas against the original history. Transfers do not count as income/expenses. Debit cards reference their linked bank balance; credit balances are liabilities. Net worth is liquid funds plus investments minus loan and credit debt.
+Production requests go to cfo/ask and cfo/snapshot. Nullable-purchase clarification, optional explicit purchase facts and expected additional income, rich cards, server decision assumptions, paginated durable history and request retry are supported. Only the conversation identifier is stored locally, scoped by authenticated username. Content and decisions stay on the backend. Failed messages must be retried or the conversation restarted before a new send.
 
-Goal savings and emergency reserves are allocations within liquid funds, not additional assets. Contributions cannot use emergency or another goal’s allocation. Goal purchase records one expense against a chosen bank/wallet/cash account and releases the allocation; repeated purchase calls are idempotent. Completion estimates split planned monthly goal savings across saving goals. Affordability evaluates one goal at a time while reserving loan payoff funds and the emergency target.
+Set-goal/remind actions POST to the exact server response ID and action index with its action key. No editable action payload or client-generated affordability decision is sent. Older response buttons disable; server conflicts remain authoritative. The payoff action asks the server for a new payoff plan.
 
-Demo mutations are locally persisted by the mock adapter. Settings can restore the seed snapshot; theme preference is preserved. Reminders are stored demo records, not real scheduled notifications. Report export is intentionally a preview only.
+## Transport and architecture
 
-## FSD v2 rules
+FSD layers: app > pages > widgets > features > entities > shared. Each slice exposes an index.ts public API; lint enforces boundaries. shared/api/contracts.ts was generated from the deployed Swagger schema. The API adapters live in their owning entity/feature slices.
 
-Layers: app > pages > widgets > features > entities > shared.
+Financial POST commands carry a stable UUID per request intention. Concurrent identical writes join one promise; ambiguous failures retain the key and identical payload for in-session retry. Changed payloads receive new keys. Reloads discard in-memory pending write keys: inspect server history before re-creating an ambiguous write. The API must expose ETag in CORS response headers for browser transaction editing.
 
-Every slice has an index.ts public API. External consumers import the alias plus slice name, never internals. A slice may import only lower layers; same-level slices do not import each other. Relative imports inside one slice are permitted. App is one composition layer; shared segments may cooperate and contain only generic UI, transport, persistence infrastructure, formatters, validation and design tokens.
+Monetary values are integer paise; dates use YYYY-MM-DD and IST planning dates. Optional wire fields normalize to the existing UI models; nullable CFO purchase facts remain null. Backend errors preserve fieldErrors, requestId and retryability metadata. Field errors are displayed alongside the server message.
 
-Pages compose widgets without business decisions. App owns bootstrap, routing, providers, errors and the shell. Topbar receives the notifications control as a slot from AppShell rather than importing another widget. Transaction form schema/presentation live in the transaction entity so independent add/edit features can reuse them. Financial notification synchronization is a feature. The CFO’s financial and conversational decisions live only in its mock API and private mock payoff helper.
+## Verification and limits
 
-eslint-plugin-boundaries enforces downward dependencies and index.ts entry points. Six intentional-import probes exercise entity, feature, widget and page peer rejection, upward imports and internal imports. Ambient vite-env.d.ts is the only unknown-file exception. Steiger is not installed; boundary enforcement is active through ESLint.
+Strict TypeScript, zero-warning ESLint, 26 existing behavior groups, six architecture probes and seven production transport/security groups are included in npm test. Browser fixture checks cover login validation, empty onboarding, account creation/summary refresh, CFO clarification, settings/logout and public signup navigation. Fixtures perform no production financial writes.
 
-## Real API swap points
-
-Replace the implementations while preserving the interfaces exported from model/types.ts and each slice’s index.ts:
-
-| Mock file | Intended REST endpoints |
-| --- | --- |
-| src/entities/transaction/api/transaction.mock.ts | GET/POST /transactions, GET/PATCH/DELETE /transactions/:id |
-| src/entities/account/api/account.mock.ts | GET /accounts, GET /accounts/:id |
-| src/entities/card/api/card.mock.ts | GET /cards, GET /cards/:id |
-| src/entities/loan/api/loan.mock.ts | GET /loans, GET /loans/:id |
-| src/entities/goal/api/goal.mock.ts | GET/POST /goals, GET /goals/:id, POST /goals/:id/contributions, POST /goals/:id/purchase, PATCH /goals/:id/achievement |
-| src/entities/budget/api/budget.mock.ts | GET /budgets?month=, PATCH /budgets/:id |
-| src/entities/category/api/category.mock.ts | GET /categories |
-| src/entities/user/api/user.mock.ts | GET/PATCH /profile |
-| src/entities/notification/api/notification.mock.ts | GET/POST /notifications, PATCH /notifications/:id/read, PATCH /notifications/read-all, GET/POST /reminders |
-| src/features/ask-cfo/api/cfo.mock.ts | POST /cfo/ask, GET /cfo/snapshot; goal/reminder actions use their corresponding real endpoints |
-
-Use the typed shared/api/http.ts transport. Set VITE_API_BASE_URL through .env.local based on .env.example. Keep abort signals, integer-paise values, ISO/date-only strings, consistent ApiError failures, list pagination and returned updated resources. Real endpoints must make financial mutations atomic and enforce the same reserve constraints. Mock resource projections, browser persistence, failure injection and the CFO mock algorithm can be removed after the swap. Stores and components continue using the same service interfaces.
-
-## CFO contract
-
-The full contract is src/features/ask-cfo/model/types.ts.
-
-~~~ts
-interface CfoRequest {
-  requestId: string;
-  conversationId: string;
-  message: string;
-  replyId?: CfoReplyId;
-  purchase?: { name: string; pricePaise: number; category: 'phone' | 'work-equipment' | 'other' };
-}
-~~~
-
-CfoResponse contains id, conversationId, revision, state, text, createdAt, purchase, snapshot, quickReplies, cards and actions. Rich card kinds are impact, loan-payoff, strategy, roi and salary-growth. Action kinds are set-goal, show-payoff and remind. The server owns the state transition. The UI formats values, renders cards and dispatches actions; it does not decide affordability, purchase dates, reasons or debt policy.
-
-The mock response takes approximately 900 ms: parallel entity reads (350 ms) plus a 550 ms reasoning delay. Immediate same-request retries return the latest cached response. Goal and reminder actions carry idempotency keys and deduplicate concurrent clicks. Active-loan guidance precedes purchase advice; work motivation offers an illustrative ROI plan; status motivation offers a delayed/lower-cost plan; phone issues branch to repair or the ₹70,000 salary-growth plan. Unsupported purchase dates are null when there is no surplus or the payment cannot amortize a loan. No external AI service is called.
-
-## Accessibility and responsive design
-
-Semantic landmarks, labelled fields, real buttons/links, skip link, route focus, keyboard-operated tabs, native modal dialogs, Escape handling, reduced-motion support, live statuses, text labels alongside chart colors, and expandable chart data tables are included. Light/dark design tokens use readable contrasting text colors. Sidebar switches to bottom navigation below 1100 px; charts/cards become one column on narrow screens. Ctrl/Cmd K focuses transaction search.
-
-## Hosting
-
-Root hosting uses BrowserRouter and requires an SPA fallback to index.html. vercel.json supplies that rewrite for Vercel. The repository GitHub Pages workflow builds wealthpilot with VITE_BASE_PATH derived from GitHub Pages settings and VITE_ROUTER_MODE=hash, then uploads wealthpilot/dist. Hash routing supports direct navigation and refresh on GitHub Pages without a server-side fallback. The live URL after a successful deployment is https://montra.realtanishqtiwari.in/#/dashboard. GitHub repository Settings > Pages must use GitHub Actions as its source. Local development defaults to browser routing.
-
-## Tests
-
-tests/domain.test.ts checks money/date formatting, transaction filtering, transfer accounting, bank/card balance deltas, protected contributions, idempotent purchases, notification/reminder mutations, cancellation and reset. tests/features.test.ts checks form boundaries, theme preference, achievement deduplication, every CFO branch, action/request idempotency, retries, zero-surplus/non-amortizing cases and card rendering. tests/boundaries.cjs probes six prohibited imports. The small Node harness transpiles test TypeScript and resolves the same FSD aliases without a separate test framework. Application source is checked by strict tsc and ESLint.
-
-See verification.md in the delivery for final build and browser results.
+Live Swagger, backend availability and the deployed frontend CORS origin were verified. Full authenticated production mutation testing requires a real account and was not performed. Render cold starts, API availability and cross-site-cookie browser policy remain deployment dependencies. The existing Recharts chunk is over Vite’s 500 kB advisory threshold.

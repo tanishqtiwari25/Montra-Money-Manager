@@ -1,0 +1,7 @@
+import { http, normalize, resourceId, type RequestOptions } from '@shared/api';
+import { IS_DEMO } from '@shared/config';
+import type * as Wire from '@shared/api';
+import type { PaymentCard, CardApi } from '../model/types';
+import { cardApi as demo } from './card.mock';
+const real: CardApi = { list: async options => normalize<PaymentCard[]>(await http.get('/cards', options)), get: async (id, options) => normalize<PaymentCard>(await http.get('/cards/' + resourceId(id), options)), };
+export const cardApi = { ...(IS_DEMO ? demo : real), create: async (input: Wire.CardInput, options?: RequestOptions) => normalize<PaymentCard>(await http.command('/cards', input, options)), update: async (id: string, input: Wire.CardInput, options?: RequestOptions) => normalize<PaymentCard>(await http.patch('/cards/' + resourceId(id), input, options)), remove: (id: string, options?: RequestOptions) => http.delete<Wire.RemovalView>('/cards/' + resourceId(id), options), bills: (id: string, options?: RequestOptions) => http.get<Wire.CardBillView[]>('/cards/' + resourceId(id) + '/bills', options), createBill: (id: string, input: Wire.CardBillInput, options?: RequestOptions) => http.command<Wire.CardBillView>('/cards/' + resourceId(id) + '/bills', input, options), repay: (id: string, input: Wire.CardRepaymentInput, options?: RequestOptions) => http.command<PaymentCard>('/cards/' + resourceId(id) + '/repayments', input, options), };

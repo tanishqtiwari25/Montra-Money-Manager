@@ -4,12 +4,13 @@ import { useCards } from '@entities/card';
 import { useTransactions, spendingByCategory } from '@entities/transaction';
 import { useCategories, categoryName } from '@entities/category';
 import { useNotifications, notificationApi, type NotificationInput } from '@entities/notification';
-import { DEMO_MONTH, DEMO_TODAY } from '@shared/config';
+import { IS_DEMO, DEMO_MONTH, DEMO_TODAY } from '@shared/config';
 import { formatMoney, formatDate } from '@shared/lib';
 const pending = new Set<string>();
 export function useFinancialNotifications(): void {
   const budgets = useBudgets(); const cards = useCards(); const transactions = useTransactions(); const categories = useCategories(); const notices = useNotifications();
   useEffect(() => {
+    if (!IS_DEMO) return;
     if (!budgets.loaded || !cards.loaded || !transactions.loaded || !categories.loaded || !notices.loaded) return;
     const alerts: NotificationInput[] = [];
     const spending = spendingByCategory(transactions.items, DEMO_MONTH);

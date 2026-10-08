@@ -1,203 +1,381 @@
-.env.example
-.eslintrc.cjs
-.gitignore
-FSD-TREE.txt
-README.md
-index.html
-package-lock.json
-package.json
-postcss.config.js
-public/favicon.svg
-src/app/index.ts
-src/app/main.tsx
-src/app/providers/AppProviders.tsx
-src/app/providers/ErrorBoundary.tsx
-src/app/router/router.tsx
-src/app/styles/global.css
-src/app/ui/AppShell.tsx
-src/entities/account/api/account.mock.ts
-src/entities/account/index.ts
-src/entities/account/model/selectors.ts
-src/entities/account/model/store.ts
-src/entities/account/model/types.ts
-src/entities/account/ui/AccountCard.tsx
-src/entities/budget/api/budget.mock.ts
-src/entities/budget/index.ts
-src/entities/budget/model/selectors.ts
-src/entities/budget/model/store.ts
-src/entities/budget/model/types.ts
-src/entities/budget/ui/BudgetCard.tsx
-src/entities/card/api/card.mock.ts
-src/entities/card/index.ts
-src/entities/card/model/selectors.ts
-src/entities/card/model/store.ts
-src/entities/card/model/types.ts
-src/entities/card/ui/PaymentCard.tsx
-src/entities/category/api/category.mock.ts
-src/entities/category/index.ts
-src/entities/category/model/selectors.ts
-src/entities/category/model/store.ts
-src/entities/category/model/types.ts
-src/entities/category/ui/CategoryLabel.tsx
-src/entities/goal/api/goal.mock.ts
-src/entities/goal/index.ts
-src/entities/goal/model/selectors.ts
-src/entities/goal/model/store.ts
-src/entities/goal/model/types.ts
-src/entities/goal/ui/GoalCard.tsx
-src/entities/loan/api/loan.mock.ts
-src/entities/loan/index.ts
-src/entities/loan/model/selectors.ts
-src/entities/loan/model/store.ts
-src/entities/loan/model/types.ts
-src/entities/loan/ui/LoanCard.tsx
-src/entities/notification/api/notification.mock.ts
-src/entities/notification/index.ts
-src/entities/notification/model/selectors.ts
-src/entities/notification/model/store.ts
-src/entities/notification/model/types.ts
-src/entities/notification/ui/NotificationItem.tsx
-src/entities/transaction/api/transaction.mock.ts
-src/entities/transaction/index.ts
-src/entities/transaction/model/schema.ts
-src/entities/transaction/model/selectors.ts
-src/entities/transaction/model/store.ts
-src/entities/transaction/model/types.ts
-src/entities/transaction/ui/TransactionForm.tsx
-src/entities/transaction/ui/TransactionRow.tsx
-src/entities/user/api/user.mock.ts
-src/entities/user/index.ts
-src/entities/user/model/selectors.ts
-src/entities/user/model/store.ts
-src/entities/user/model/types.ts
-src/entities/user/ui/ProfileSummary.tsx
-src/features/add-transaction/index.ts
-src/features/add-transaction/model/schema.ts
-src/features/add-transaction/ui/AddTransaction.tsx
-src/features/ask-cfo/api/cfo.mock.ts
-src/features/ask-cfo/index.ts
-src/features/ask-cfo/lib/loan-plan.ts
-src/features/ask-cfo/model/prompts.ts
-src/features/ask-cfo/model/schema.ts
-src/features/ask-cfo/model/store.ts
-src/features/ask-cfo/model/types.ts
-src/features/ask-cfo/ui/CfoActions.tsx
-src/features/ask-cfo/ui/CfoConversation.tsx
-src/features/ask-cfo/ui/CfoFinancialSnapshot.tsx
-src/features/ask-cfo/ui/CfoRichCard.tsx
-src/features/contribute-to-goal/index.ts
-src/features/contribute-to-goal/model/announce.ts
-src/features/contribute-to-goal/model/schema.ts
-src/features/contribute-to-goal/ui/ContributeToGoal.tsx
-src/features/contribute-to-goal/ui/GoalCelebration.tsx
-src/features/create-goal/index.ts
-src/features/create-goal/model/schema.ts
-src/features/create-goal/ui/CreateGoal.tsx
-src/features/edit-profile/index.ts
-src/features/edit-profile/model/schema.ts
-src/features/edit-profile/ui/ProfileForm.tsx
-src/features/edit-transaction/index.ts
-src/features/edit-transaction/model/schema.ts
-src/features/edit-transaction/ui/EditTransaction.tsx
-src/features/filter-transactions/index.ts
-src/features/filter-transactions/model/filters.ts
-src/features/filter-transactions/ui/TransactionFilters.tsx
-src/features/mark-goal-purchased/index.ts
-src/features/mark-goal-purchased/model/schema.ts
-src/features/mark-goal-purchased/ui/MarkGoalPurchased.tsx
-src/features/sync-notifications/index.ts
-src/features/sync-notifications/model/useFinancialNotifications.ts
-src/features/toggle-theme/index.ts
-src/features/toggle-theme/model/store.ts
-src/features/toggle-theme/ui/ThemeToggle.tsx
-src/pages/accounts/index.ts
-src/pages/accounts/ui/AccountsPage.tsx
-src/pages/ask-cfo/index.ts
-src/pages/ask-cfo/ui/AskCfoPage.tsx
-src/pages/budgets/index.ts
-src/pages/budgets/ui/BudgetsPage.tsx
-src/pages/dashboard/index.ts
-src/pages/dashboard/ui/DashboardPage.tsx
-src/pages/goals/index.ts
-src/pages/goals/ui/GoalsPage.tsx
-src/pages/loans/index.ts
-src/pages/loans/ui/LoansPage.tsx
-src/pages/reports/index.ts
-src/pages/reports/ui/ReportsPage.tsx
-src/pages/settings/index.ts
-src/pages/settings/ui/SettingsPage.tsx
-src/pages/transactions/index.ts
-src/pages/transactions/ui/TransactionsPage.tsx
-src/shared/api/http.ts
-src/shared/api/index.ts
-src/shared/api/mock-adapter.ts
-src/shared/api/types.ts
-src/shared/config/demo-clock.ts
-src/shared/config/index.ts
-src/shared/lib/collection-store.ts
-src/shared/lib/currency.ts
-src/shared/lib/date.ts
-src/shared/lib/errors.ts
-src/shared/lib/index.ts
-src/shared/lib/validation.ts
-src/shared/theme/index.ts
-src/shared/theme/tokens.css
-src/shared/ui/AsyncState.tsx
-src/shared/ui/Avatar.tsx
-src/shared/ui/Badge.tsx
-src/shared/ui/Button.tsx
-src/shared/ui/Card.tsx
-src/shared/ui/Charts.tsx
-src/shared/ui/EmptyState.tsx
-src/shared/ui/ErrorState.tsx
-src/shared/ui/Input.tsx
-src/shared/ui/Modal.tsx
-src/shared/ui/PageHeader.tsx
-src/shared/ui/ProgressBar.tsx
-src/shared/ui/Select.tsx
-src/shared/ui/Skeleton.tsx
-src/shared/ui/Tabs.tsx
-src/shared/ui/Toast.tsx
-src/shared/ui/index.ts
-src/vite-env.d.ts
-src/widgets/accounts-overview/index.ts
-src/widgets/accounts-overview/ui/AccountsOverview.tsx
-src/widgets/budgets-overview/index.ts
-src/widgets/budgets-overview/ui/BudgetsOverview.tsx
-src/widgets/cashflow-chart/index.ts
-src/widgets/cashflow-chart/ui/FinancialCharts.tsx
-src/widgets/cfo-chat/index.ts
-src/widgets/cfo-chat/ui/CfoChat.tsx
-src/widgets/financial-health/index.ts
-src/widgets/financial-health/ui/FinancialHealth.tsx
-src/widgets/goals-overview/index.ts
-src/widgets/goals-overview/ui/GoalsOverview.tsx
-src/widgets/kpi-overview/index.ts
-src/widgets/kpi-overview/ui/KpiOverview.tsx
-src/widgets/loans-overview/index.ts
-src/widgets/loans-overview/ui/LoansOverview.tsx
-src/widgets/notifications-panel/index.ts
-src/widgets/notifications-panel/ui/NotificationsPanel.tsx
-src/widgets/recent-transactions/index.ts
-src/widgets/recent-transactions/ui/RecentTransactions.tsx
-src/widgets/reports-overview/index.ts
-src/widgets/reports-overview/ui/CategoryTrends.tsx
-src/widgets/reports-overview/ui/ReportsOverview.tsx
-src/widgets/settings-profile/index.ts
-src/widgets/settings-profile/ui/SettingsProfile.tsx
-src/widgets/sidebar/index.ts
-src/widgets/sidebar/ui/Sidebar.tsx
-src/widgets/topbar/index.ts
-src/widgets/topbar/ui/Topbar.tsx
-src/widgets/transactions-workspace/index.ts
-src/widgets/transactions-workspace/ui/TransactionsWorkspace.tsx
-tailwind.config.js
-tests/boundaries.cjs
-tests/domain.test.ts
-tests/features.test.ts
-tests/register.cjs
-tests/run.cjs
-tsconfig.json
-vercel.json
-verification.md
-vite.config.ts
+src/
+  app/
+    index.ts
+    main.tsx
+    providers/
+      AppProviders.tsx
+      ErrorBoundary.tsx
+    router/
+      router.tsx
+    styles/
+      global.css
+    ui/
+      AppShell.tsx
+      AuthGate.tsx
+      RecoveryCode.tsx
+  entities/
+    account/
+      api/
+        account.api.ts
+        account.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        AccountCard.tsx
+    auth/
+      api/
+        auth.api.ts
+      index.ts
+      model/
+        store.ts
+        types.ts
+    budget/
+      api/
+        budget.api.ts
+        budget.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        BudgetCard.tsx
+    card/
+      api/
+        card.api.ts
+        card.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        PaymentCard.tsx
+    category/
+      api/
+        category.api.ts
+        category.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        CategoryLabel.tsx
+    goal/
+      api/
+        goal.api.ts
+        goal.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        GoalCard.tsx
+    loan/
+      api/
+        loan.api.ts
+        loan.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        LoanCard.tsx
+    notification/
+      api/
+        notification.api.ts
+        notification.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        NotificationItem.tsx
+    overview/
+      api/
+        overview.api.ts
+      index.ts
+      model/
+        store.ts
+    transaction/
+      api/
+        transaction.api.ts
+        transaction.mock.ts
+      index.ts
+      model/
+        schema.ts
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        TransactionForm.tsx
+        TransactionRow.tsx
+    user/
+      api/
+        user.api.ts
+        user.mock.ts
+      index.ts
+      model/
+        selectors.ts
+        store.ts
+        types.ts
+      ui/
+        ProfileSummary.tsx
+  features/
+    account-security/
+      index.ts
+      ui/
+        AccountSecurity.tsx
+    add-transaction/
+      index.ts
+      model/
+        schema.ts
+      ui/
+        AddTransaction.tsx
+    ask-cfo/
+      api/
+        cfo.api.ts
+        cfo.mock.ts
+      index.ts
+      lib/
+        loan-plan.ts
+      model/
+        prompts.ts
+        schema.ts
+        store.ts
+        types.ts
+      ui/
+        CfoActions.tsx
+        CfoConversation.tsx
+        CfoFinancialSnapshot.tsx
+        CfoRichCard.tsx
+    authenticate/
+      index.ts
+      model/
+        schema.ts
+      ui/
+        AuthForm.tsx
+    contribute-to-goal/
+      index.ts
+      model/
+        announce.ts
+        schema.ts
+      ui/
+        ContributeToGoal.tsx
+        GoalCelebration.tsx
+    create-goal/
+      index.ts
+      model/
+        schema.ts
+      ui/
+        CreateGoal.tsx
+    edit-profile/
+      index.ts
+      model/
+        schema.ts
+      ui/
+        ProfileForm.tsx
+    edit-transaction/
+      index.ts
+      model/
+        schema.ts
+      ui/
+        EditTransaction.tsx
+    filter-transactions/
+      index.ts
+      model/
+        filters.ts
+      ui/
+        TransactionFilters.tsx
+    financial-history/
+      index.ts
+      ui/
+        FinancialHistory.tsx
+    manage-finances/
+      index.ts
+      model/
+        forms.ts
+      ui/
+        ManageFinances.tsx
+    mark-goal-purchased/
+      index.ts
+      model/
+        schema.ts
+      ui/
+        MarkGoalPurchased.tsx
+    sync-notifications/
+      index.ts
+      model/
+        useFinancialNotifications.ts
+    toggle-theme/
+      index.ts
+      model/
+        store.ts
+      ui/
+        ThemeToggle.tsx
+  pages/
+    accounts/
+      index.ts
+      ui/
+        AccountsPage.tsx
+    ask-cfo/
+      index.ts
+      ui/
+        AskCfoPage.tsx
+    budgets/
+      index.ts
+      ui/
+        BudgetsPage.tsx
+    dashboard/
+      index.ts
+      ui/
+        DashboardPage.tsx
+    goals/
+      index.ts
+      ui/
+        GoalsPage.tsx
+    loans/
+      index.ts
+      ui/
+        LoansPage.tsx
+    login/
+      index.ts
+      ui/
+        LoginPage.tsx
+    recover/
+      index.ts
+      ui/
+        RecoverPage.tsx
+    reports/
+      index.ts
+      ui/
+        ReportsPage.tsx
+    settings/
+      index.ts
+      ui/
+        SettingsPage.tsx
+    signup/
+      index.ts
+      ui/
+        SignupPage.tsx
+    transactions/
+      index.ts
+      ui/
+        TransactionsPage.tsx
+  shared/
+    api/
+      contracts.ts
+      health.ts
+      http.ts
+      index.ts
+      mock-adapter.ts
+      query.ts
+      session.ts
+      types.ts
+    config/
+      demo-clock.ts
+      index.ts
+      runtime.ts
+    lib/
+      collection-store.ts
+      currency.ts
+      date.ts
+      errors.ts
+      index.ts
+      validation.ts
+    theme/
+      index.ts
+      tokens.css
+    ui/
+      AsyncState.tsx
+      Avatar.tsx
+      Badge.tsx
+      Button.tsx
+      Card.tsx
+      Charts.tsx
+      EmptyState.tsx
+      ErrorState.tsx
+      index.ts
+      Input.tsx
+      Modal.tsx
+      PageHeader.tsx
+      ProgressBar.tsx
+      Select.tsx
+      Skeleton.tsx
+      Tabs.tsx
+      Toast.tsx
+  vite-env.d.ts
+  widgets/
+    accounts-overview/
+      index.ts
+      ui/
+        AccountsOverview.tsx
+    auth-panel/
+      index.ts
+      ui/
+        AuthPanel.tsx
+    budgets-overview/
+      index.ts
+      ui/
+        BudgetsOverview.tsx
+    cashflow-chart/
+      index.ts
+      ui/
+        FinancialCharts.tsx
+    cfo-chat/
+      index.ts
+      ui/
+        CfoChat.tsx
+    financial-health/
+      index.ts
+      ui/
+        FinancialHealth.tsx
+    goals-overview/
+      index.ts
+      ui/
+        GoalsOverview.tsx
+    kpi-overview/
+      index.ts
+      ui/
+        KpiOverview.tsx
+    loans-overview/
+      index.ts
+      ui/
+        LoansOverview.tsx
+    notifications-panel/
+      index.ts
+      ui/
+        NotificationsPanel.tsx
+    recent-transactions/
+      index.ts
+      ui/
+        RecentTransactions.tsx
+    reports-overview/
+      index.ts
+      ui/
+        ApiReports.tsx
+        CategoryTrends.tsx
+        ReportsOverview.tsx
+    settings-profile/
+      index.ts
+      ui/
+        SettingsProfile.tsx
+    sidebar/
+      index.ts
+      ui/
+        Sidebar.tsx
+    topbar/
+      index.ts
+      ui/
+        Topbar.tsx
+    transactions-workspace/
+      index.ts
+      ui/
+        TransactionsWorkspace.tsx

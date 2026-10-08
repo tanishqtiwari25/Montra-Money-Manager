@@ -1,3 +1,4 @@
+import { IS_DEMO } from '@shared/config';
 import { z } from 'zod';
 import { calendarDateSchema, rupeeAmountSchema, rupeesToPaise } from '@shared/lib';
 import type { Transaction, TransactionInput } from './types';
@@ -15,9 +16,9 @@ export const transactionFormSchema = z.object({
   destinationAccountId: z.string().optional(),
 }).superRefine((value, context) => {
   if (value.type !== 'transfer') return;
-  const source = value.paymentMethodId === 'hdfc-debit' ? 'hdfc' : value.paymentMethodId === 'icici-debit' ? 'icici' : value.paymentMethodId;
+  const source = IS_DEMO && value.paymentMethodId === 'hdfc-debit' ? 'hdfc' : IS_DEMO && value.paymentMethodId === 'icici-debit' ? 'icici' : value.paymentMethodId;
   if (!value.destinationAccountId || value.destinationAccountId === source) context.addIssue({ code: 'custom', path: ['destinationAccountId'], message: 'Choose a different destination account.' });
-  if (value.paymentMethodId.includes('credit')) context.addIssue({ code: 'custom', path: ['paymentMethodId'], message: 'Choose a bank, wallet, cash or debit account for transfers.' });
+  if (IS_DEMO && value.paymentMethodId.includes('credit')) context.addIssue({ code: 'custom', path: ['paymentMethodId'], message: 'Choose a bank, wallet, cash or debit account for transfers.' });
 });
 export type TransactionFormValues = z.infer<typeof transactionFormSchema>;
 export function transactionToForm(transaction: Transaction): TransactionFormValues {

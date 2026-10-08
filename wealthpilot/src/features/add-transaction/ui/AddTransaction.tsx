@@ -14,7 +14,7 @@ export function AddTransaction({ onSaved }: { onSaved?: () => void }) {
   const dataError = accounts.error ?? cards.error ?? categories.error;
   const ready = accounts.loaded && cards.loaded && categories.loaded;
   const retry = () => { void accounts.load(true); void cards.load(true); void categories.load(true); };
-  const defaults: TransactionFormValues = { amount: 0, type: 'expense', categoryId: '', date: DEMO_TODAY, note: '', paymentMethodId: 'hdfc', tags: '', destinationAccountId: '' };
+  const defaults: TransactionFormValues = { amount: 0, type: 'expense', categoryId: '', date: DEMO_TODAY, note: '', paymentMethodId: accounts.items.find(account => account.type !== 'investment')?.id ?? '', tags: '', destinationAccountId: '' };
   const submit = async (values: TransactionFormValues) => {
     setSaving(true); setError(null);
     try {
@@ -26,6 +26,6 @@ export function AddTransaction({ onSaved }: { onSaved?: () => void }) {
     finally { setSaving(false); }
   };
   return <><Button variant="primary"  onClick={() => { setError(null); setOpen(true); }}><Plus size={18} />Add transaction</Button><Modal open={open} title="Add transaction" onClose={() => { if (!saving) setOpen(false); }}>
-    {dataError ? <ErrorState message={dataError} onRetry={retry} /> : !ready ? <Skeleton className="h-80" /> : <TransactionForm defaults={defaults} onSubmit={submit} onCancel={() => setOpen(false)} error={error} categoryOptions={categories.items.map(category => ({ id: category.id, label: category.name }))} paymentOptions={[...accounts.items.filter(account => account.type !== 'investment').map(account => ({ id: account.id, label: account.institution + ' · ' + account.name })), ...cards.items.map(card => ({ id: card.id, label: card.name + ' · ' + card.type + ' · ' + card.lastFour }))]} destinationOptions={accounts.items.map(account => ({ id: account.id, label: account.name }))} />}
+    {dataError ? <ErrorState message={dataError} onRetry={retry} /> : !ready ? <Skeleton className="h-80" /> : <TransactionForm defaults={defaults} onSubmit={submit} onCancel={() => setOpen(false)} error={error} categoryOptions={categories.items.map(category => ({ id: category.id, label: category.name }))} paymentOptions={[...accounts.items.filter(account => account.type !== 'investment').map(account => ({ id: account.id, label: account.institution + ' · ' + account.name })), ...cards.items.map(card => ({ id: card.id, accountId: card.accountId, type: card.type, label: card.name + ' · ' + card.type + ' · ' + card.lastFour }))]} destinationOptions={accounts.items.map(account => ({ id: account.id, label: account.name }))} />}
   </Modal></>;
 }

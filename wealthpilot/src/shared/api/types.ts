@@ -1,9 +1,9 @@
-export interface RequestOptions { signal?: AbortSignal }
+export interface RequestOptions { signal?: AbortSignal; headers?: Record<string, string>; auth?: boolean; idempotencyKey?: string; etag?: string }
 export interface PageQuery { page?: number; pageSize?: number }
 export interface Page<T> { items: T[]; total: number; page: number; pageSize: number }
-export type ApiErrorCode = 'VALIDATION' | 'NOT_FOUND' | 'NETWORK' | 'ABORTED' | 'CONFLICT';
+export type ApiErrorCode = 'VALIDATION' | 'NOT_FOUND' | 'NETWORK' | 'ABORTED' | 'CONFLICT' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'RATE_LIMIT';
 export class ApiError extends Error {
-  constructor(public readonly code: ApiErrorCode, message: string, public readonly status = 400) {
+  constructor(public readonly code: ApiErrorCode, message: string, public readonly status = 400, public readonly details: Record<string, unknown> = {}) {
     super(message); this.name = 'ApiError';
   }
 }

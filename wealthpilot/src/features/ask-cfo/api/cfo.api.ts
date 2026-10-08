@@ -1,0 +1,8 @@
+import { http, resourceId, normalize, queryString, ApiError, type RequestOptions, type Page } from '@shared/api';
+import { IS_DEMO } from '@shared/config';
+import type { CfoActionResult, CfoHistoryItem } from '@shared/api';
+import type { CfoApi, CfoResponse } from '../model/types';
+import { cfoApi as demo } from './cfo.mock';
+function response(value: CfoResponse): CfoResponse { return { ...value, purchase: value.purchase ?? null, quickReplies: value.quickReplies ?? [], cards: (value.cards ?? []).map(card => normalize(card)), actions: (value.actions ?? []).map(action => normalize(action)) }; }
+const real: CfoApi = { ask: async (input, options) => response(await http.post('/cfo/ask', input, options)), getSnapshot: options => http.get('/cfo/snapshot', options), setGoal: async () => { throw new ApiError('FORBIDDEN', 'Use the server response action to save this plan.'); }, remind: async () => { throw new ApiError('FORBIDDEN', 'Use the server response action to save this reminder.'); } };
+export const cfoApi = { ...(IS_DEMO ? demo : real), history: async (id: string, page = 1, options?: RequestOptions) => { const result = await http.get<Page<CfoHistoryItem>>('/cfo/conversations/' + resourceId(id) + '/history' + queryString({ page, pageSize: 100 }), options); return { ...result, items: (result.items ?? []).map(item => ({ ...item, response: item.response ? response(item.response as unknown as CfoResponse) : null })) }; }, executeAction: (id: string, index: number, key: string, options?: RequestOptions) => http.command<CfoActionResult>('/cfo/responses/' + resourceId(id) + '/actions/' + index, undefined, { ...options, idempotencyKey: key }) };

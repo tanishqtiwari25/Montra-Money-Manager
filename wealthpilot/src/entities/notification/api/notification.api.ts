@@ -1,0 +1,7 @@
+import { http, normalize, queryString, resourceId, ApiError, type RequestOptions } from '@shared/api';
+import { IS_DEMO } from '@shared/config';
+import type { Page } from '@shared/api';
+import type { NotificationApi, Notification } from '../model/types';
+import { notificationApi as demo } from './notification.mock';
+const real: NotificationApi = { list: async options => normalize(await http.get('/notifications', options)), create: async () => { throw new ApiError('FORBIDDEN', 'Financial notifications are created by the server.'); }, markRead: async (id, options) => normalize(await http.patch('/notifications/' + resourceId(id) + '/read', undefined, options)), markAllRead: async options => normalize(await http.patch('/notifications/read-all', undefined, options)), listReminders: async options => normalize(await http.get('/reminders', options)), createReminder: async (input, options) => normalize(await http.command('/reminders', input, options)) };
+export const notificationApi = { ...(IS_DEMO ? demo : real), history: (page = 1, pageSize = 50, options?: RequestOptions) => http.get<Page<Notification>>('/notifications/history' + queryString({ page, pageSize }), options), unreadCount: (options?: RequestOptions) => http.get<number | { count?: number; unreadCount?: number }>('/notifications/unread-count', options).then(result => { const count = typeof result === 'number' ? result : result.unreadCount ?? result.count; if (typeof count !== 'number') throw new ApiError('NETWORK', 'Unread count response is invalid.'); return count; }) };

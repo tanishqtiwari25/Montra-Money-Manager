@@ -8,13 +8,15 @@ import { Button, Modal, Skeleton, ErrorState, toast } from '@shared/ui';
 import { errorMessage } from '@shared/lib';
 
 export function EditTransaction({ transaction, onSaved }: { transaction: Transaction; onSaved?: () => void }) {
+  const [fresh, setFresh] = useState<Transaction | null>(null);
   const [open, setOpen] = useState(false); const [saving, setSaving] = useState(false); const [error, setError] = useState<string | null>(null);
   const accounts = useAccounts(); const cards = useCards(); const categories = useCategories();
   useEffect(() => { if (open) { void accounts.load(); void cards.load(); void categories.load(); } }, [open, accounts.load, cards.load, categories.load]);
   const dataError = accounts.error ?? cards.error ?? categories.error;
   const ready = accounts.loaded && cards.loaded && categories.loaded;
   const retry = () => { void accounts.load(true); void cards.load(true); void categories.load(true); };
-  const defaults: TransactionFormValues = transactionToForm(transaction);
+  useEffect(() => { if (!open) return; const controller = new AbortController(); setFresh(null); void transactionApi.get(transaction.id, { signal: controller.signal }).then(setFresh).catch((cause: unknown) => { if (!controller.signal.aborted) setError(errorMessage(cause)); }); return () => controller.abort(); }, [open, transaction.id]);
+  const defaults: TransactionFormValues = transactionToForm(fresh ?? transaction);
   const submit = async (values: TransactionFormValues) => {
     setSaving(true); setError(null);
     try {
@@ -26,6 +28,6 @@ export function EditTransaction({ transaction, onSaved }: { transaction: Transac
     finally { setSaving(false); }
   };
   return <><Button variant="ghost" aria-label={'Edit ' + transaction.note} onClick={() => { setError(null); setOpen(true); }}><Pencil size={16} /></Button><Modal open={open} title="Edit transaction" onClose={() => { if (!saving) setOpen(false); }}>
-    {dataError ? <ErrorState message={dataError} onRetry={retry} /> : !ready ? <Skeleton className="h-80" /> : <TransactionForm defaults={defaults} onSubmit={submit} onCancel={() => setOpen(false)} error={error} categoryOptions={categories.items.map(category => ({ id: category.id, label: category.name }))} paymentOptions={[...accounts.items.filter(account => account.type !== 'investment').map(account => ({ id: account.id, label: account.institution + ' · ' + account.name })), ...cards.items.map(card => ({ id: card.id, label: card.name + ' · ' + card.type + ' · ' + card.lastFour }))]} destinationOptions={accounts.items.map(account => ({ id: account.id, label: account.name }))} />}
+    {dataError || (!fresh && error) ? <ErrorState message={dataError ?? error ?? 'Reload the transaction.'} onRetry={retry} /> : !ready || !fresh ? <Skeleton className="h-80" /> : <TransactionForm defaults={defaults} onSubmit={submit} onCancel={() => setOpen(false)} error={error} categoryOptions={categories.items.map(category => ({ id: category.id, label: category.name }))} paymentOptions={[...accounts.items.filter(account => account.type !== 'investment').map(account => ({ id: account.id, label: account.institution + ' · ' + account.name })), ...cards.items.map(card => ({ id: card.id, accountId: card.accountId, type: card.type, label: card.name + ' · ' + card.type + ' · ' + card.lastFour }))]} destinationOptions={accounts.items.map(account => ({ id: account.id, label: account.name }))} />}
   </Modal></>;
 }

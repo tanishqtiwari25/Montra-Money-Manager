@@ -1,10 +1,11 @@
+import type { FinancialDecision } from '@shared/api';
 import type { RequestOptions } from '@shared/api';
 import type { Goal, GoalInput } from '@entities/goal';
 import type { Reminder } from '@entities/notification';
 export type CfoStage = 'ready' | 'awaiting-reason' | 'awaiting-detail' | 'awaiting-device' | 'advice';
 export type CfoReplyId = 'purchase-phone' | 'purchase-laptop' | 'importance' | 'reason-work' | 'reason-status' | 'reason-device' | 'reason-other' | 'device-minor' | 'device-major' | 'device-okay' | 'payoff-plan' | 'review-plan';
 export interface CfoPurchase { name: string; pricePaise: number; category: 'phone' | 'work-equipment' | 'other' }
-export interface CfoRequest { requestId: string; conversationId: string; message: string; replyId?: CfoReplyId; purchase?: CfoPurchase }
+export interface CfoRequest { requestId: string; conversationId: string; message: string; replyId?: CfoReplyId; purchase?: CfoPurchase; expectedAdditionalMonthlyIncomePaise?: number }
 export interface CfoQuickReply { id: CfoReplyId; label: string; message: string }
 export interface CfoSnapshot {
   salaryPaise: number; liquidSavingsPaise: number; goalAllocationsPaise: number;
@@ -33,7 +34,7 @@ export interface CfoRemindAction { kind: 'remind'; label: string; title: string;
 export type CfoAction = CfoSetGoalAction | CfoPayoffAction | CfoRemindAction;
 export interface CfoResponse {
   id: string; conversationId: string; revision: number; state: CfoStage;
-  text: string; createdAt: string; purchase: CfoPurchase; snapshot: CfoSnapshot;
+  text: string; createdAt: string; purchase: CfoPurchase | null; decision?: FinancialDecision; snapshot: CfoSnapshot;
   quickReplies: CfoQuickReply[]; cards: CfoRichCard[]; actions: CfoAction[];
 }
 export interface CfoApi {

@@ -1,6 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Skeleton } from '@shared/ui';
+import { AuthGate } from '../ui/AuthGate';
+import { LoginPage } from '@pages/login';
+import { SignupPage } from '@pages/signup';
+import { RecoverPage } from '@pages/recover';
 import { AppShell } from '../ui/AppShell';
 const Dashboard = lazy(() => import('@pages/dashboard').then(module => ({ default: module.DashboardPage })));
 const Transactions = lazy(() => import('@pages/transactions').then(module => ({ default: module.TransactionsPage })));
@@ -14,5 +18,5 @@ const AskCfo = lazy(() => import('@pages/ask-cfo').then(module => ({ default: mo
 export function AppRouter() {
   const hashRouting = import.meta.env.VITE_ROUTER_MODE === 'hash';
   const Router = hashRouting ? HashRouter : BrowserRouter;
-  return <Router basename={hashRouting ? undefined : import.meta.env.BASE_URL}><Suspense fallback={<div className="mx-auto max-w-6xl space-y-5 p-8"><Skeleton className="h-12 w-72" /><Skeleton className="h-80" /></div>}><Routes><Route element={<AppShell />}><Route index element={<Navigate to="/dashboard" replace />} /><Route path="dashboard" element={<Dashboard />} /><Route path="transactions" element={<Transactions />} /><Route path="accounts" element={<Accounts />} /><Route path="budgets" element={<Budgets />} /><Route path="loans" element={<Loans />} /><Route path="goals" element={<Goals />} /><Route path="reports" element={<Reports />} /><Route path="settings" element={<Settings />} /><Route path="ask-cfo" element={<AskCfo />} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Route></Routes></Suspense></Router>;
+  return <Router basename={hashRouting ? undefined : import.meta.env.BASE_URL}><Suspense fallback={<div className="mx-auto max-w-6xl space-y-5 p-8"><Skeleton className="h-12 w-72" /><Skeleton className="h-80" /></div>}><Routes><Route path="login" element={<LoginPage />} /><Route path="signup" element={<SignupPage />} /><Route path="recover" element={<RecoverPage />} /><Route element={<AuthGate />}><Route element={<AppShell />}><Route index element={<Navigate to="/dashboard" replace />} /><Route path="dashboard" element={<Dashboard />} /><Route path="transactions" element={<Transactions />} /><Route path="accounts" element={<Accounts />} /><Route path="budgets" element={<Budgets />} /><Route path="loans" element={<Loans />} /><Route path="goals" element={<Goals />} /><Route path="reports" element={<Reports />} /><Route path="settings" element={<Settings />} /><Route path="ask-cfo" element={<AskCfo />} /><Route path="*" element={<Navigate to="/dashboard" replace />} /></Route></Route></Routes></Suspense></Router>;
 }

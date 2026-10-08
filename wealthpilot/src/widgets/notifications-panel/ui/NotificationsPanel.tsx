@@ -1,10 +1,12 @@
+import { IS_DEMO } from '@shared/config';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Bell, X } from 'lucide-react';
 import { useNotifications, notificationApi, NotificationItem, unreadNotificationCount } from '@entities/notification';
 import { Button, EmptyState, Skeleton, ErrorState, toast } from '@shared/ui';
 import { errorMessage } from '@shared/lib';
 export function NotificationsPanel() {
-  const notices = useNotifications(); const [open, setOpen] = useState(false); const ref = useRef<HTMLDivElement>(null); const buttonRef = useRef<HTMLButtonElement>(null); const id = useId(); const unread = unreadNotificationCount(notices.items);
+  const notices = useNotifications(); const [open, setOpen] = useState(false); const ref = useRef<HTMLDivElement>(null); const buttonRef = useRef<HTMLButtonElement>(null); const id = useId(); const [serverUnread, setServerUnread] = useState<number | null>(null); const unread = IS_DEMO ? unreadNotificationCount(notices.items) : serverUnread ?? unreadNotificationCount(notices.items);
+  useEffect(() => { if (IS_DEMO || !notices.loaded) return; let active = true; void notificationApi.unreadCount().then(count => { if (active) setServerUnread(count); }).catch((cause: unknown) => { if (active) toast(errorMessage(cause), 'error'); }); return () => { active = false; }; }, [notices.items, notices.loaded]);
   useEffect(() => { if (!open) return; const outside = (event: PointerEvent) => { if (event.target instanceof Node && !ref.current?.contains(event.target)) setOpen(false); }; const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setOpen(false); buttonRef.current?.focus(); } }; document.addEventListener('pointerdown', outside); document.addEventListener('keydown', escape); ref.current?.querySelector<HTMLButtonElement>('[data-close-notices]')?.focus(); return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape); }; }, [open]);
   const read = async (noticeId: string) => { setOpen(false); try { notices.upsert(await notificationApi.markRead(noticeId)); } catch (cause: unknown) { toast(errorMessage(cause), 'error'); } };
   const readAll = async () => { try { const items = await notificationApi.markAllRead(); items.forEach(notices.upsert); } catch (cause: unknown) { toast(errorMessage(cause), 'error'); } };

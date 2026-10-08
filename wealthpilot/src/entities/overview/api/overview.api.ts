@@ -1,0 +1,3 @@
+import { http, queryString, type RequestOptions } from '@shared/api';
+import type { SummaryView, DashboardView, ReportView, ReconciliationView } from '@shared/api';
+export const overviewApi = { summary: (options?: RequestOptions) => http.get<SummaryView>('/summary', options), dashboard: (month?: string, months = 12, options?: RequestOptions) => http.get<DashboardView>('/dashboard' + queryString({ month, months }), options), report: (period: 'month' | 'year', value: string, options?: RequestOptions) => http.get<ReportView>('/reports/summary' + queryString({ period, value }), options), reconciliation: (options?: RequestOptions) => http.get<ReconciliationView>('/reconciliation', options) };
