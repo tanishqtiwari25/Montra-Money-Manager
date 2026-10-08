@@ -50,3 +50,5 @@ Monetary values are integer paise; dates use YYYY-MM-DD and IST planning dates. 
 Strict TypeScript, zero-warning ESLint, 26 existing behavior groups, six architecture probes and seven production transport/security groups are included in npm test. Browser fixture checks cover login validation, empty onboarding, account creation/summary refresh, CFO clarification, settings/logout and public signup navigation. Fixtures perform no production financial writes.
 
 Live Swagger, backend availability and the deployed frontend CORS origin were verified. Full authenticated production mutation testing requires a real account and was not performed. Render cold starts, API availability and cross-site-cookie browser policy remain deployment dependencies. The existing Recharts chunk is over Vite’s 500 kB advisory threshold.
+
+Latest live verification: see [LIVE-API-TEST-REPORT.md](docs/LIVE-API-TEST-REPORT.md). All 65 routes were exercised; cross-site refresh cookie configuration remains unresolved.

@@ -10,7 +10,7 @@ export const authApi = {
   login: (input: LoginInput) => cookieCommand(() => http.post<AuthResponse>('/auth/login', input, publicOptions)),
   register: (input: RegisterInput) => cookieCommand(() => http.post<AuthResponse>('/auth/register', input, publicOptions)),
   refresh: () => http.post<AuthResponse>('/auth/refresh', {}, publicOptions),
-  logout: () => cookieCommand(() => http.post<void>('/auth/logout', {}, publicOptions)),
+  logout: () => cookieCommand(() => http.post<void>('/auth/logout', {})),
   me: () => http.get<IdentityView>('/auth/me'),
   recover: (input: RecoverInput) => cookieCommand(() => http.post<{ recoveryCode?: string | null }>('/auth/recover', input, publicOptions)),
   password: (input: { currentPassword: string; newPassword: string }) => cookieCommand(() => http.post<{ recoveryCode: string }>('/auth/password', input)),

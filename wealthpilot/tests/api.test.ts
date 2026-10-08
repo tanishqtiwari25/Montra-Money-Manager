@@ -46,6 +46,7 @@ async function run() {
  let resolveAccounts!: (value: Response) => void; handler = () => new Promise(resolve => { resolveAccounts = resolve; }); useAccounts.getState().reset(); const load = useAccounts.getState().load(); useAccounts.getState().reset(); resolveAccounts(json([{ id: 'old-owner', name: 'Old owner account' }])); await load; assert.deepEqual(useAccounts.getState().items, []);
  console.log('PASS late requests cannot repopulate another user’s cleared financial stores');
  handler = () => new Promise(resolve => { resolveAccounts = resolve; }); setAccessToken('owner-one'); const oldRequest = accountApi.list(); setAccessToken('owner-two'); resolveAccounts(json([])); await assert.rejects(oldRequest, (error: unknown) => error instanceof ApiError && error.code === 'ABORTED');
- handler = () => json({ message: 'signed out' }); await authApi.logout(); assert.equal(calls.at(-1)?.headers.get('X-WealthPilot-CSRF'), '1');
+ handler = () => json({ message: 'signed out' }); await authApi.logout(); assert.equal(calls.at(-1)?.headers.get('X-WealthPilot-CSRF'), '1'); assert.equal(calls.at(-1)?.headers.get('Authorization'), 'Bearer owner-two');
 }
 run().catch(error => { console.error(error); process.exitCode = 1; });
+

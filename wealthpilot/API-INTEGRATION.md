@@ -118,3 +118,5 @@ Live Swagger, backend availability and the deployed frontend CORS origin were ve
 - GET /api/v1/transactions/{id}
 - PATCH /api/v1/transactions/{id}
 - DELETE /api/v1/transactions/{id}
+
+Latest live verification: see [LIVE-API-TEST-REPORT.md](docs/LIVE-API-TEST-REPORT.md). All 65 routes were exercised; cross-site refresh cookie configuration remains unresolved.

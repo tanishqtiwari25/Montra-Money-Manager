@@ -112,7 +112,7 @@ export const financeForms: Record<string, { label: string; schema: string; field
         "type": "text",
         "money": false,
         "optional": false,
-        "value": "linear-gradient(135deg, #172554, #4338ca)"
+        "value": "indigo"
       },
       {
         "name": "openingDebtPaise",
@@ -128,7 +128,7 @@ export const financeForms: Record<string, { label: string; schema: string; field
         "type": "number",
         "money": true,
         "optional": true,
-        "value": 0
+        "value": ""
       }
     ]
   },
