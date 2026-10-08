@@ -21,7 +21,9 @@
 }
 @layer components {
   .app-shell { min-height: 100dvh; }
-  .desktop-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: 236px; display: none; flex-direction: column; padding: 34px 22px 22px; border-right: 1px solid rgb(var(--line)); background: rgb(var(--panel)); }
+  .desktop-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: 236px; height: 100dvh; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; scrollbar-width: thin; display: none; flex-direction: column; padding: 34px 22px 22px; border-right: 1px solid rgb(var(--line)); background: rgb(var(--panel)); }
+  .desktop-sidebar > * { flex-shrink: 0; }
+  .desktop-sidebar > nav { margin-bottom: 24px; }
   .brand { display: flex; align-items: center; gap: 10px; color: rgb(var(--ink)); font-size: 18px; font-weight: 700; letter-spacing: -.6px; }
   .brand-mark { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; color: white; background: linear-gradient(135deg, #4338ca, #6d5eea); box-shadow: 0 5px 14px #4338ca22; }
   .brand-caption { display: block; margin-top: 4px; font-size: 8px; font-weight: 400; letter-spacing: 0; color: rgb(var(--muted)); }
@@ -87,3 +89,4 @@
 .auth-story { display: flex; flex-direction: column; padding: clamp(32px, 5vw, 76px); color: white; background: radial-gradient(ellipse at top right, #6366f144, transparent 60%), linear-gradient(140deg, #101b36, #312e81); }
 .auth-form-panel { display: flex; align-items: center; justify-content: center; padding: 48px 32px; background: rgb(var(--panel)); }
 @media (max-width: 850px) { .auth-layout { grid-template-columns: 1fr; } .auth-story { min-height: auto; padding: 24px; } .auth-story > div { display: none; } .auth-story > p { display: none; } .auth-form-panel { padding: 40px 24px; align-items: flex-start; } }
+
