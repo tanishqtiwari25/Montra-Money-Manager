@@ -4,7 +4,7 @@ import { authApi, useAuth } from '@entities/auth';
 import { accountApi, useAccounts } from '@entities/account';
 import { cardApi } from '@entities/card';
 import { transactionApi } from '@entities/transaction';
-import { cfoApi } from '@features/ask-cfo';
+import { cfoApi, useCfo } from '@features/ask-cfo';
 type Call = { path: string; method: string; headers: Headers; body: unknown; credentials: string | undefined };
 const calls: Call[] = [];
 let handler: (call: Call) => Promise<Response> | Response = () => json({});
@@ -47,6 +47,9 @@ async function run() {
  console.log('PASS late requests cannot repopulate another user’s cleared financial stores');
  handler = () => new Promise(resolve => { resolveAccounts = resolve; }); setAccessToken('owner-one'); const oldRequest = accountApi.list(); setAccessToken('owner-two'); resolveAccounts(json([])); await assert.rejects(oldRequest, (error: unknown) => error instanceof ApiError && error.code === 'ABORTED');
  handler = () => json({ message: 'signed out' }); await authApi.logout(); assert.equal(calls.at(-1)?.headers.get('X-WealthPilot-CSRF'), '1'); assert.equal(calls.at(-1)?.headers.get('Authorization'), 'Bearer owner-two');
+ const conversationStorage = new Map<string, string>(); Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: { getItem: (key: string) => conversationStorage.get(key) ?? null, setItem: (key: string, value: string) => conversationStorage.set(key, value) } });
+ useCfo.getState().clear(); await useCfo.getState().restore('qa-owner'); const emptyId = useCfo.getState().conversationId; handler = () => json({ message: 'Resource not found' }, 404); await useCfo.getState().restore('qa-owner'); assert.equal(useCfo.getState().error, null); assert.deepEqual(useCfo.getState().messages, []); assert.equal(useCfo.getState().conversationId, emptyId); handler = () => json({ message: 'Unavailable' }, 503); await useCfo.getState().restore('qa-owner'); assert.equal(useCfo.getState().error, 'Unavailable'); useCfo.getState().clear(); console.log('PASS empty CFO history restores without error; real failures stay visible');
+
 }
 run().catch(error => { console.error(error); process.exitCode = 1; });
 

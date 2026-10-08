@@ -51,4 +51,4 @@ Strict TypeScript, zero-warning ESLint, 26 existing behavior groups, six archite
 
 Live Swagger, backend availability and the deployed frontend CORS origin were verified. Full authenticated production mutation testing requires a real account and was not performed. Render cold starts, API availability and cross-site-cookie browser policy remain deployment dependencies. The existing Recharts chunk is over Vite’s 500 kB advisory threshold.
 
-Latest live verification: see [LIVE-API-TEST-REPORT.md](docs/LIVE-API-TEST-REPORT.md). All 65 routes were exercised; cross-site refresh cookie configuration remains unresolved.
+Latest live verification: see [LIVE-API-TEST-REPORT.md](docs/LIVE-API-TEST-REPORT.md). All 65 routes were exercised; cross-site refresh cookie configuration and browser session restoration are now verified.
