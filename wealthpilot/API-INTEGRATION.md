@@ -121,4 +121,4 @@ Live Swagger, backend availability and the deployed frontend CORS origin were ve
 
 Latest live verification: see [LIVE-API-TEST-REPORT.md](docs/LIVE-API-TEST-REPORT.md). All 65 routes were exercised; cross-site refresh cookie configuration and browser session restoration are now verified.
 
-Automatic-goals replacement: see [AUTOMATIC-GOALS.md](docs/AUTOMATIC-GOALS.md). New backend routes must be deployed before this frontend is promoted.
+Automatic-goals replacement: see [AUTOMATIC-GOALS.md](docs/AUTOMATIC-GOALS.md). The frontend handles a missing planning service by keeping saved goals and creation available; automatic allocations require the new backend routes.

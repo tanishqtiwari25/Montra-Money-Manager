@@ -25,3 +25,7 @@ Live backend https://montra-apis-w8pd.onrender.com/api/v1/goals/plan returned 40
 After backend deployment, fetch updated OpenAPI, confirm exact plan wrapper/nullable fields and priority PATCH response, run synthetic owner-scoped plan/priority/purchase/replay tests, then promote frontend and verify deployed browser. Do not re-run the old live manual-contribution test script against the new contract.
 
 Purchase retry fixture: temporary 503 preserves open dialog, source account and error; reload restores pending purchase; retry sends the exact original idempotency key and body.
+
+## Missing planning API recovery
+
+Goals metadata and planning requests settle separately. A 404 planning endpoint now leaves saved goal metadata and creation usable, with an explicit unavailable status. No progress, affordability or purchase readiness is invented. Priority and purchase controls stay unavailable until a complete automatic plan loads. Refresh automatically exits this state after backend recovery. Metadata and unexpected API failures remain visible. This safe fallback can deploy before the backend routes; full automatic planning still requires the backend update.
