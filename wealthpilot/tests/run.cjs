@@ -6,3 +6,5 @@ for (const args of [['tests/register.cjs', 'tests/domain.test.ts'], ['tests/regi
 if (!process.exitCode) { const result = spawnSync(process.execPath, ['tests/register.cjs', 'tests/api.test.ts'], { cwd: root, stdio: 'inherit', env: { ...process.env, WEALTHPILOT_TEST_MODE: 'api' } }); if (result.status !== 0) process.exitCode = result.status ?? 1; }
 
 if (!process.exitCode) { const result = spawnSync(process.execPath, ['tests/register.cjs', 'tests/automatic-goals.test.ts'], { cwd: root, stdio: 'inherit', env: { ...process.env, WEALTHPILOT_TEST_MODE: 'api' } }); if (result.status !== 0) process.exitCode = result.status ?? 1; }
+
+if (!process.exitCode) { const result = spawnSync(process.execPath, ['tests/register.cjs', 'tests/financial-commands.test.ts'], { cwd: root, stdio: 'inherit', env: { ...process.env, WEALTHPILOT_TEST_MODE: 'api' } }); if (result.status !== 0) process.exitCode = result.status ?? 1; }

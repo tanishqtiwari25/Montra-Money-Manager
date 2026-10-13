@@ -18,9 +18,13 @@ TypeScript, ESLint, regression suite and production build passed. The existing c
 
 Disposable QA account only: planning, priority updates, shock preview, balance adjustment, card schedule, loan detail update, pocket creation (`general`), pocket edit/delete and goal delete passed. Deposit terms correctly rejected a cash account; emergency conversion correctly rejected a general pocket. These operations need an eligible fixed deposit/emergency pocket.
 
-## Remaining contract gaps
+## Funding and loan void follow-up
 
-Swagger does not specify the pocket funding `direction` enum or the loan void `confirmation` value. `release` is recognized by the backend and correctly rejects an empty pocket. Funding candidates tested were rejected with 422. Pocket funding and loan void controls are withheld pending exact accepted values. Their endpoint clients are present; successful end-to-end execution is not claimed.
+Both previously withheld controls are now enabled using the supplied backend contract. Pocket funding uses direction `set-aside`; release uses `release`. Amounts must be positive integer paise. Loan void requires a trimmed 8–200 character reason and a case-sensitive match to the selected loan name.
+
+Live disposable QA verification passed: ₹100 funding reserved exactly once on replay; release restored the pocket amount to zero; account cash remained unchanged. Incorrect loan confirmation returned 422. Exact-name loan void and same-key replay returned 200 without changing account cash. Frontend tests cover rejected amounts/directions, reason limits, name capitalization, and identical retry payload/key.
+
+Uncertain requests retain an explicit command key and frozen inputs until retry resolves. Success refreshes financial data; refresh errors do not resubmit a successful command.
 
 Automatic purchase continues to use the server readiness gate, one source account, and stable purchase intent. A new successful automatic purchase was not exercised during this audit; previous frontend retry/double-click tests remain passing.
 

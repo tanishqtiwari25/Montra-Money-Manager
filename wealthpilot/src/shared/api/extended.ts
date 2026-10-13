@@ -61,7 +61,7 @@ export const extendedActions = [
   },
   {
     "key": "pocketMove",
-    "label": "Release pocket savings",
+    "label": "Set aside or release pocket savings",
     "resource": "pockets",
     "method": "POST",
     "path": "/pockets/{id}/movements",
