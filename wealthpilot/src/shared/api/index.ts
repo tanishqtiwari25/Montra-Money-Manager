@@ -10,3 +10,5 @@ export { queryString, normalize, resourceId } from './query';
 export type * from './contracts';
 
 export { healthApi } from './health';
+
+export { extendedApi, extendedActions, extendedFields, type PocketView } from './extended';
