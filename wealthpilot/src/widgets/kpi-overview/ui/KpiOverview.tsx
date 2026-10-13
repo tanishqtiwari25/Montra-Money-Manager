@@ -6,8 +6,8 @@ import { useLoans, activeLoanOutstanding } from '@entities/loan';
 import { useTransactions, transactionTotals } from '@entities/transaction';
 import { AsyncState } from '@shared/ui';
 import { IS_DEMO, DEMO_MONTH } from '@shared/config';
-import { formatMoney } from '@shared/lib';
-export function KpiOverview() {
+import { usePrivateMoney } from '@shared/lib';
+export function KpiOverview() { const formatMoney = usePrivateMoney();
   const accounts = useAccounts(); const cards = useCards(); const loans = useLoans(); const transactions = useTransactions();
   const overview = useOverview(); const summary = overview.dashboard?.summary;
   const totals = !IS_DEMO && summary ? { incomePaise: summary.actualMonthlyIncomePaise, expensePaise: summary.actualMonthlyExpensesPaise, savingsPaise: summary.actualMonthlySavingsPaise, savingsRate: summary.savingsRatePercent } : transactionTotals(transactions.items, DEMO_MONTH); const balance = !IS_DEMO && summary ? summary.liquidBalancePaise : liquidBalance(accounts.items); const netWorth = !IS_DEMO && summary ? summary.netWorthPaise : balance + investmentBalance(accounts.items) - creditCardDebt(cards.items) - activeLoanOutstanding(loans.items);

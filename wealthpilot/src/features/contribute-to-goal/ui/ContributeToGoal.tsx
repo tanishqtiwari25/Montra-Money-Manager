@@ -5,10 +5,10 @@ import { goalApi, useGoals, remainingForGoal, type Goal } from '@entities/goal';
 import { useAccounts } from '@entities/account';
 import { useUser } from '@entities/user';
 import { Button, Modal, Input, Skeleton, ErrorState, toast } from '@shared/ui';
-import { errorMessage, formatMoney, rupeesToPaise } from '@shared/lib';
+import { errorMessage, usePrivateMoney, rupeesToPaise } from '@shared/lib';
 import { contributionSchema, type ContributionValues } from '../model/schema';
 import { announceGoalAchievement } from '../model/announce';
-function ContributionForm({ goal, onCancel, onDone, onBusy }: { goal: Goal; onCancel: () => void; onDone: () => void; onBusy: (busy: boolean) => void }) {
+function ContributionForm({ goal, onCancel, onDone, onBusy }: { goal: Goal; onCancel: () => void; onDone: () => void; onBusy: (busy: boolean) => void }) { const formatMoney = usePrivateMoney();
   const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ContributionValues>({ resolver: zodResolver(contributionSchema(remainingForGoal(goal))), defaultValues: { amount: Math.min(1000, remainingForGoal(goal) / 100) } });
   const submit = async (values: ContributionValues) => {

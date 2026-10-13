@@ -4,11 +4,10 @@ import { useTransactions, monthlyTrend, spendingByCategory, transactionTotals } 
 import { useCategories } from '@entities/category';
 import { Card, Tabs, CartesianChart, DonutChart, ChartDataTable, AsyncState, EmptyState, type ChartSeries } from '@shared/ui';
 import { IS_DEMO, DEMO_MONTH } from '@shared/config';
-import { formatMoney, formatDate } from '@shared/lib';
+import { usePrivateMoney, formatDate } from '@shared/lib';
 const series: ChartSeries[] = [{ key: 'incomePaise', label: 'Income', color: '#059669' }, { key: 'expensePaise', label: 'Expenses', color: '#e11d48' }];
 const cashflowSeries: ChartSeries[] = [{ key: 'savingsPaise', label: 'Monthly surplus', color: '#6366f1' }];
-const compactMoney = (value: number) => formatMoney(value, { compact: true });
-export function FinancialCharts() {
+export function FinancialCharts() { const formatMoney = usePrivateMoney(); const compactMoney = (value:number) => formatMoney(value,{compact:true});
   const overview = useOverview(); const transactions = useTransactions(); const categories = useCategories(); const [range, setRange] = useState<'6' | '12'>('6');
   const points = useMemo(() => (IS_DEMO ? monthlyTrend(transactions.items) : overview.dashboard?.trends ?? []).slice(-Number(range)).map(point => ({ ...point, month: point.month ?? '', label: formatDate(point.month + '-01', { month: 'short' }) })), [transactions.items, range, overview.dashboard]);
   const breakdown = useMemo(() => (IS_DEMO ? spendingByCategory(transactions.items, DEMO_MONTH) : overview.dashboard?.categories ?? []).map(item => ({ name: categories.items.find(category => category.id === item.categoryId)?.name ?? 'Other', value: item.amountPaise, color: categories.items.find(category => category.id === item.categoryId)?.color ?? '#64748b' })), [transactions.items, categories.items, overview.dashboard]);

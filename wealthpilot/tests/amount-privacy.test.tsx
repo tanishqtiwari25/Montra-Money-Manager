@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import { renderToStaticMarkup } from 'react-dom/server';
+import type { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { useAmountPrivacy, privateMoney, maskMoneyText, formatMoney, HIDDEN_AMOUNT } from '@shared/lib';
+import { AmountVisibilityToggle, Input, ChartDataTable } from '@shared/ui';
+import { ProfileSummary } from '../src/entities/user/ui/ProfileSummary';
+import { NotificationItem } from '../src/entities/notification/ui/NotificationItem';
+const stored=new Map<string,string>();Object.assign(globalThis,{localStorage:{getItem:(key:string)=>stored.get(key)??null,setItem:(key:string,value:string)=>stored.set(key,value)}});
+const raw=formatMoney(6543210);
+assert.equal(privateMoney(6543210,true),HIDDEN_AMOUNT);assert.equal(privateMoney(-6543210,true,{compact:true}),HIDDEN_AMOUNT);assert.equal(privateMoney(1234,true,{decimals:true}),HIDDEN_AMOUNT);
+assert.equal(maskMoneyText('₹7,600 due on 14 Oct. Save INR 25000; Rs. 1.5 Lakh or 100 rupees.',true),'₹•••• due on 14 Oct. Save ₹••••; ₹•••• or ₹••••.');
+assert.equal(maskMoneyText('14 Oct 2026; 5 months; 20% funded.',true),'14 Oct 2026; 5 months; 20% funded.');assert.equal(maskMoneyText(raw,false),raw);
+// Server rendering reads the current test store rather than the captured startup snapshot.
+const render=(node:ReactNode)=>{useAmountPrivacy.getInitialState().hidden=useAmountPrivacy.getState().hidden;return renderToStaticMarkup(node);};
+const profile={id:'qa',name:'QA User',email:'qa@example.com',occupation:'Designer',monthlySalaryPaise:6543210,monthlyGoalSavingsPaise:10000,emergencyFundPaise:10000,emergencyTargetPaise:10000,currency:'INR' as const};
+useAmountPrivacy.getState().setHidden(true);assert.equal(stored.get('wealthpilot.hide-amounts'),'true');
+const hidden=render(<ProfileSummary profile={profile}/>);assert.ok(hidden.includes(HIDDEN_AMOUNT));assert.ok(!hidden.includes(raw));
+assert.equal(formatMoney(6543210),raw,'Privacy never changes domain/API formatting');
+const input=render(<Input label="Monthly salary (₹)" type="number" value="65432.10" readOnly={false} onChange={()=>{}}/>);assert.ok(input.includes('type="password"'));assert.ok(input.includes('value="65432.10"'));
+const chart=render(<ChartDataTable data={[{month:'Oct',salary:6543210}]} series={[{key:'salary',label:'Salary',color:'#000'}]} xKey="month" caption="Salary" formatValue={value=>privateMoney(value,true)}/>);assert.ok(chart.includes(HIDDEN_AMOUNT));assert.ok(!chart.includes(raw));
+const note=render(<MemoryRouter><NotificationItem notification={{id:'qa',kind:'bill-due',title:'₹7,600 due',message:'Pay ₹7,600 on 14 Oct.',read:false,href:'/accounts',sourceKey:'qa',createdAt:'2026-10-13T00:00:00Z'}} onRead={()=>{}}/></MemoryRouter>);assert.ok(!note.includes('7,600'));assert.ok(note.includes('14 Oct'));
+const toggle=render(<AmountVisibilityToggle/>);assert.ok(toggle.includes('Show all amounts'));assert.ok(toggle.includes('aria-pressed="true"'));
+useAmountPrivacy.getState().toggle();assert.equal(stored.get('wealthpilot.hide-amounts'),'false');assert.ok(render(<ProfileSummary profile={profile}/>).includes(raw));assert.ok(render(<Input label="Amount (₹)" type="number"/>).includes('type="number"'));
+useAmountPrivacy.getState().setHidden(false);
+console.log('PASS persisted global masking across amounts, money inputs, notification prose, chart data, reveal and unchanged financial formatting');

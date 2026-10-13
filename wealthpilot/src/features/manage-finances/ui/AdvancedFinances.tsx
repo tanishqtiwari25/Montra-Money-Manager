@@ -9,9 +9,9 @@ import { useTransactions } from '@entities/transaction';
 import { useOverview } from '@entities/overview';
 import { ApiError, extendedApi, extendedActions, extendedFields, type PocketView } from '@shared/api';
 import { Button, Modal, Select, Input, ErrorState, toast } from '@shared/ui';
-import { errorMessage, formatMoney } from '@shared/lib';
+import { errorMessage, usePrivateMoney } from '@shared/lib';
 
-export function AdvancedFinances() {
+export function AdvancedFinances() { const formatMoney = usePrivateMoney();
  const accounts=useAccounts(); const cards=useCards(); const loans=useLoans(); const goals=useGoals();
  const [open,setOpen]=useState(false); const [key,setKey]=useState('deposit'); const [id,setId]=useState('');
  const [values,setValues]=useState<Record<string,string>>({}); const [pockets,setPockets]=useState<PocketView[]>([]);

@@ -15,3 +15,5 @@ export { PageHeader } from './PageHeader';
 export { AsyncState } from './AsyncState';
 export { CartesianChart, DonutChart, ChartDataTable } from './Charts';
 export type { ChartSeries, ChartPoint } from './Charts';
+
+export { AmountVisibilityToggle } from './AmountVisibilityToggle';
