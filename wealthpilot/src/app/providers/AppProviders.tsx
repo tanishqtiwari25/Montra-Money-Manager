@@ -23,7 +23,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
     const stores = [useAccounts, useCards, useLoans, useTransactions, useCategories, useBudgets, useGoals, useNotifications];
     if (!IS_DEMO) { stores.forEach(store => store.getState().reset()); useUser.getState().reset(); useOverview.getState().reset(); clearTransactionVersions(); useCfo.getState().clear(); useGoalPlan.getState().reset(); }
     if (!IS_DEMO && auth.status !== 'authenticated') return;
-    if (!IS_DEMO) { void useOverview.getState().load(); void useCfo.getState().restore(auth.identity?.username ?? ''); }
+    if (!IS_DEMO) { void useOverview.getState().load(); }
     void useAccounts.getState().load(); void useCards.getState().load(); void useLoans.getState().load(); void useTransactions.getState().load(); void useCategories.getState().load(); void useBudgets.getState().load(); void useGoals.getState().load(); void useUser.getState().load(); void useNotifications.getState().load(); }, [auth.status, auth.epoch, auth.identity?.username]);
   useEffect(() => { if (IS_DEMO || auth.status !== 'authenticated') return; const unsubscribe = useTransactions.subscribe(() => { void useOverview.getState().load(true); }); const timer = window.setInterval(() => { void useOverview.getState().load(true); void useNotifications.getState().load(true); }, 60000); return () => { unsubscribe(); window.clearInterval(timer); }; }, [auth.status]);
   useEffect(() => { if (IS_DEMO || auth.status !== 'authenticated') return; let timer: ReturnType<typeof setTimeout> | undefined;
