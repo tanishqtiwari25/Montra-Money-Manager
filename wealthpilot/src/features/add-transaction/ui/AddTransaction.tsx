@@ -25,7 +25,7 @@ export function AddTransaction({ onSaved }: { onSaved?: () => void }) {
     } catch (cause: unknown) { setError(errorMessage(cause)); }
     finally { setSaving(false); }
   };
-  return <><Button variant="primary"  onClick={() => { setError(null); setOpen(true); }}><Plus size={18} />Add transaction</Button><Modal open={open} title="Add transaction" onClose={() => { if (!saving) setOpen(false); }}>
+  return <><Button variant="primary"  onClick={() => { setError(null); setOpen(true); }}><Plus size={18} />Add income or expense</Button><Modal open={open} title="Add income or expense" onClose={() => { if (!saving) setOpen(false); }}>
     {dataError ? <ErrorState message={dataError} onRetry={retry} /> : !ready ? <Skeleton className="h-80" /> : <TransactionForm defaults={defaults} onSubmit={submit} onCancel={() => setOpen(false)} error={error} categoryOptions={categories.items.map(category => ({ id: category.id, label: category.name }))} paymentOptions={[...accounts.items.filter(account => account.type !== 'investment').map(account => ({ id: account.id, label: account.institution + ' · ' + account.name })), ...cards.items.map(card => ({ id: card.id, accountId: card.accountId, type: card.type, label: card.name + ' · ' + card.type + ' · ' + card.lastFour }))]} destinationOptions={accounts.items.map(account => ({ id: account.id, label: account.name }))} />}
   </Modal></>;
 }
