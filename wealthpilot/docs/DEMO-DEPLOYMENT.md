@@ -20,7 +20,9 @@ Edits are saved locally in that browser and origin. They are not sent to the bac
 
 This repository uses **GitHub Actions** to build and publish Pages, rather than “Deploy from a branch.” Keep **Settings → Pages → Build and deployment → Source = GitHub Actions**.
 
-The workflow builds `main` for the root website and `demo` for `/demo/`. Both builds are uploaded as one Pages artifact. A push to either branch refreshes the combined site. Production build environment values are explicitly set, so demo cannot silently replace the root's API mode.
+The workflow builds `main` for the root website and `demo` for `/demo/`. Both builds are uploaded as one Pages artifact. A push to either branch refreshes the combined site. The existing Pages environment permits deployments from `main` only: a demo-branch push therefore requests a `workflow_dispatch` run on `main`, which builds both branches. No deployment allowlist needs to be weakened. Production build environment values are explicitly set, so demo cannot silently replace the root's API mode.
+
+The dispatch job has repository Actions write permission only for requesting that deployment; build jobs do not need it. This uses GitHub's supported workflow-dispatch exception for the built-in token: https://docs.github.com/en/actions/concepts/security/github_token. In Actions you will see a short successful demo-trigger job followed by the main deployment run.
 
 The initial demo branch must exist before this combined workflow can build it. Do not delete or rename that branch without updating the workflow.
 

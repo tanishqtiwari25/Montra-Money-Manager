@@ -21,7 +21,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  refresh-from-demo:
+    if: github.ref == 'refs/heads/demo'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Request deployment from the permitted main branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              ref: 'main',
+              inputs: { root_version: context.payload.inputs?.root_version || 'main' }
+            });
   build:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout root website
