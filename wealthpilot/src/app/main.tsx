@@ -4,6 +4,7 @@ import { useTheme } from '@features/toggle-theme';
 import { AppRouter, AppProviders, ErrorBoundary } from './index';
 import '@shared/theme';
 import './styles/global.css';
+import './styles/demo.css';
 useTheme.getState().initialize();
 const element = document.getElementById('root');
 if (!element) throw new Error('Application root element is missing.');

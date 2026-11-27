@@ -17,3 +17,4 @@ export { CartesianChart, DonutChart, ChartDataTable } from './Charts';
 export type { ChartSeries, ChartPoint } from './Charts';
 
 export { AmountVisibilityToggle } from './AmountVisibilityToggle';
+export { Brand } from './Brand';

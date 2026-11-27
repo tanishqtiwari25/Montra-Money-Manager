@@ -2,8 +2,8 @@ import { ApiError, mockCollection, mockRequest, requireDate, requireRecord } fro
 import { DEMO_TODAY } from '@shared/config';
 import type { Notification, NotificationApi, Reminder } from '../model/types';
 const db = mockCollection<Notification>('notifications', () => [
-  { id: 'notice-headphones', kind: 'goal-achieved', title: 'A goal worth celebrating', message: 'You can now afford Noise-cancelling headphones based on your salary and savings.', createdAt: '2026-10-07T09:00:00+05:30', read: false, href: '/goals', sourceKey: 'goal:headphones' },
-  { id: 'notice-card', kind: 'bill-due', title: 'HDFC card bill is coming up', message: '₹7,600 is due on 14 Oct. Keep your payment ready.', createdAt: '2026-10-07T08:30:00+05:30', read: false, href: '/accounts', sourceKey: 'bill:hdfc-credit:2026-10-14' },
+  { id: 'notice-headphones', kind: 'goal-achieved', title: 'A goal worth celebrating', message: 'Review the current sample goal plan before recording a purchase.', createdAt: '2026-10-07T09:00:00+05:30', read: false, href: '/goals', sourceKey: 'goal:headphones' },
+  { id: 'notice-card', kind: 'bill-due', title: 'Northstar card bill is coming up', message: '₹7,600 is due on 14 Oct. Keep your payment ready.', createdAt: '2026-10-07T08:30:00+05:30', read: false, href: '/accounts', sourceKey: 'bill:hdfc-credit:2026-10-14' },
   { id: 'notice-food', kind: 'budget-exceeded', title: 'Food budget exceeded', message: 'Food & groceries is ₹1,000 over your October budget.', createdAt: '2026-10-07T08:00:00+05:30', read: false, href: '/budgets', sourceKey: 'budget:budget-food:2026-10' },
 ]);
 const reminders = mockCollection<Reminder>('reminders', () => []);

@@ -26,11 +26,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
     if (!IS_DEMO) { void useOverview.getState().load(); }
     void useAccounts.getState().load(); void useCards.getState().load(); void useLoans.getState().load(); void useTransactions.getState().load(); void useCategories.getState().load(); void useBudgets.getState().load(); void useGoals.getState().load(); void useUser.getState().load(); void useNotifications.getState().load(); }, [auth.status, auth.epoch, auth.identity?.username]);
   useEffect(() => { if (IS_DEMO || auth.status !== 'authenticated') return; const unsubscribe = useTransactions.subscribe(() => { void useOverview.getState().load(true); }); const timer = window.setInterval(() => { void useOverview.getState().load(true); void useNotifications.getState().load(true); }, 60000); return () => { unsubscribe(); window.clearInterval(timer); }; }, [auth.status]);
-  useEffect(() => { if (IS_DEMO || auth.status !== 'authenticated') return; let timer: ReturnType<typeof setTimeout> | undefined;
-    const refresh = () => { useGoalPlan.getState().invalidate(); if(timer)clearTimeout(timer); timer=setTimeout(()=>{void useGoalPlan.getState().load();void useOverview.getState().load(true);},100); };
+  useEffect(() => { if (!IS_DEMO && auth.status !== 'authenticated') return; let timer: ReturnType<typeof setTimeout> | undefined;
+    const refresh = () => { useGoalPlan.getState().invalidate(); if(timer)clearTimeout(timer); timer=setTimeout(()=>{void useGoalPlan.getState().load();if(!IS_DEMO)void useOverview.getState().load(true);},100); };
     const subscriptions = [useAccounts,useCards,useLoans,useTransactions,useBudgets,useGoals].map(store=>store.subscribe((state,previous)=>{if(state.items!==previous.items)refresh();}));
     subscriptions.push(useUser.subscribe((state,previous)=>{if(state.profile!==previous.profile)refresh();}));
-    const focus=()=>{void useGoalPlan.getState().load();void useOverview.getState().load(true);};window.addEventListener('focus',focus);void useGoalPlan.getState().load();
+    const focus=()=>{void useGoalPlan.getState().load();if(!IS_DEMO)void useOverview.getState().load(true);};window.addEventListener('focus',focus);void useGoalPlan.getState().load();
     return ()=>{subscriptions.forEach(unsubscribe=>unsubscribe());if(timer)clearTimeout(timer);window.removeEventListener('focus',focus);};
   },[auth.status,auth.epoch]);
   useFinancialNotifications();

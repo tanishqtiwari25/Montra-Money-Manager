@@ -1,9 +1,10 @@
-import { API_BASE_URL } from '@shared/config';
+import { API_BASE_URL, IS_DEMO } from '@shared/config';
 import { ApiError, type RequestOptions } from './types';
 import { getAccessToken, getSessionEpoch, refreshAccessToken } from './session';
 type Metadata<T> = { data: T; etag: string | null };
 function errorDetails(value: unknown): Record<string, unknown> { return value && typeof value === 'object' ? value as Record<string, unknown> : {}; }
 async function request<T>(method: string, path: string, body?: unknown, options: RequestOptions = {}, retried = false): Promise<Metadata<T>> {
+  if (IS_DEMO) throw new ApiError('FORBIDDEN', 'This operation is not available in the local product demo. No live request was sent.', 403);
   if (options.signal?.aborted) throw new ApiError('ABORTED', 'Request cancelled.', 499);
   const controller = new AbortController();
   const abort = () => controller.abort(); options.signal?.addEventListener('abort', abort, { once: true });

@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { formatMoney, formatDate, addMonths } from '../src/shared/lib';
-import { ApiError, failNextMockRequests, resetMockData, requireDate, paginate } from '../src/shared/api';
+import { ApiError, failNextMockRequests, resetMockData, requireDate, paginate, http } from '../src/shared/api';
 import { transactionApi, transactionTotals, monthlyTrend } from '../src/entities/transaction';
 import { accountApi } from '../src/entities/account';
 import { cardApi } from '../src/entities/card';
 import { userApi } from '../src/entities/user';
-import { goalApi, goalAffordability, allocatedToGoals } from '../src/entities/goal';
+import { goalApi, goalAffordability } from '../src/entities/goal';
 import { loanApi } from '../src/entities/loan';
 import { budgetApi } from '../src/entities/budget';
 import { notificationApi } from '../src/entities/notification';
@@ -23,6 +23,12 @@ const check = async (name: string, test: () => void | Promise<void>) => { await 
 
 async function main() {
   resetMockData();
+  await check('demo transport refuses live API calls before fetch', async () => {
+    const original = globalThis.fetch; let calls = 0;
+    globalThis.fetch = async () => { calls++; throw new Error('Unexpected live request'); };
+    try { await assert.rejects(http.get('/accounts'), (e: unknown) => e instanceof ApiError && e.status === 403); assert.equal(calls,0); }
+    finally { globalThis.fetch = original; }
+  });
   await check('INR and IST formatting; month-end calendar arithmetic', () => {
     assert.equal(formatMoney(10000000), '₹1,00,000');
     assert.equal(formatMoney(1500000000, { compact: true }), '₹1.5 Cr');
@@ -53,7 +59,7 @@ async function main() {
     assert.equal(month.total, 12);
     assert.equal(transactionTotals(month.items).incomePaise, 6000000);
     assert.equal(transactionTotals(month.items).expensePaise, 4119900);
-    const filtered = await transactionApi.list({ search: 'swiggy', type: 'expense', paymentMethodId: 'hdfc-credit', minPaise: 100000, maxPaise: 150000, page: 2, pageSize: 3 });
+    const filtered = await transactionApi.list({ search: 'oak table', type: 'expense', paymentMethodId: 'hdfc-credit', minPaise: 100000, maxPaise: 150000, page: 2, pageSize: 3 });
     assert.equal(filtered.total, 10);
     assert.equal(filtered.items.length, 3);
   });
@@ -75,23 +81,22 @@ async function main() {
     assert.equal((await accountApi.get('hdfc')).balancePaise, initialBank.balancePaise);
     await transactionApi.remove(item.id);
   });
-  await check('goal threshold, protected allocation and idempotent purchase ledger', async () => {
+  await check('demo shared goal pool, priority and idempotent purchase ledger', async () => {
     const before = await accountApi.get('hdfc');
-    const achieved = await goalApi.contribute('iphone', { amountPaise: 800000 });
-    assert.equal(achieved.status, 'achieved');
-    assert.equal((await accountApi.get('hdfc')).balancePaise, before.balancePaise);
-    await goalApi.purchase('iphone', { paymentAccountId: 'hdfc' });
-    await goalApi.purchase('iphone', { paymentAccountId: 'hdfc' });
-    assert.equal((await accountApi.get('hdfc')).balancePaise, before.balancePaise - 10000000);
-    const purchase = await transactionApi.list({ search: 'iPhone · goal purchase' });
-    assert.equal(purchase.total, 1);
-    await assert.rejects(goalApi.purchase('headphones', { paymentAccountId: 'paytm' }), (error: unknown) => error instanceof ApiError && error.code === 'VALIDATION');
-    assert.equal((await goalApi.get('headphones')).status, 'achieved');
-    const expensive = await goalApi.create({ name: 'Studio', targetPaise: 100000000, icon: 'sparkles', priority: 'high' });
-    await assert.rejects(goalApi.contribute(expensive.id, { amountPaise: 30000000 }), ApiError);
-    assert.equal((await goalApi.get(expensive.id)).savedPaise, 0);
-    const goals = await goalApi.list(); assert.equal(allocatedToGoals(goals), 8200000);
-    assert.ok(storage.size > 0);
+    const plan = await goalApi.plan();
+    assert.ok(plan.plan.goals.reduce((n,g)=>n+g.availablePaise,0)<=plan.plan.automaticPoolPaise);
+    await assert.rejects(goalApi.purchase('headphones', { paymentAccountId: 'hdfc' }), ApiError);
+    await goalApi.priority('headphones',{priority:'high',targetDate:null});
+    assert.equal((await goalApi.plan()).plan.goals.find(g=>g.goalId==='headphones')?.canBuyNow,true);
+    await assert.rejects(goalApi.purchase('headphones', { paymentAccountId: 'paytm' }), ApiError);
+    await goalApi.purchase('headphones', { paymentAccountId: 'hdfc' });
+    await goalApi.purchase('headphones', { paymentAccountId: 'hdfc' });
+    assert.equal((await accountApi.get('hdfc')).balancePaise,before.balancePaise-1200000);
+    assert.equal((await transactionApi.list({search:'Noise-cancelling headphones · goal purchase'})).total,1);
+    const after=await goalApi.plan();assert.ok(!after.plan.goals.some(g=>g.goalId==='headphones'));
+    const shock=await goalApi.shockTest({amountPaise:1000000});assert.ok(shock.plan.automaticPoolPaise<=after.plan.automaticPoolPaise);
+    assert.equal((await accountApi.get('hdfc')).balancePaise,before.balancePaise-1200000);
+    resetMockData();
   });
   await check('affordability handles emergency gap, active debt and zero savings', () => {
     const base = { liquidSavingsPaise: 10000000, emergencyReservedPaise: 4500000, emergencyTargetPaise: 18000000, totalGoalAllocationsPaise: 9200000, monthlySavingsPaise: 1200000, activeLoanOutstandingPaise: 10000000 };

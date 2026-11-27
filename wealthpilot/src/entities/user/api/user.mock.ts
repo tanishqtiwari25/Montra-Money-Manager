@@ -1,6 +1,6 @@
 import { ApiError, mockCollection, mockRequest, readMockResource, readMockView, requirePaise } from '@shared/api';
 import type { UserProfile, UserApi } from '../model/types';
-const db = mockCollection<UserProfile>('user', () => [{ id: 'demo-user', name: 'Tanishq Tiwari', email: 'tanishq@example.com', occupation: 'Product designer', monthlySalaryPaise: 6000000, monthlyGoalSavingsPaise: 1200000, emergencyFundPaise: 4500000, emergencyTargetPaise: 18000000, currency: 'INR' }]);
+const db = mockCollection<UserProfile>('user', () => [{ id: 'demo-user', name: 'Oliver Bennett', email: 'oliver.bennett@example.com', occupation: 'Senior product designer', monthlySalaryPaise: 6000000, monthlyGoalSavingsPaise: 1200000, emergencyFundPaise: 4500000, emergencyTargetPaise: 18000000, currency: 'INR' }]);
 export const userApi: UserApi = {
   get: options => mockRequest(() => { const user = db.read()[0]; if (!user) throw new ApiError('NOT_FOUND', 'Profile not found.', 404); return user; }, options),
   update: (input, options) => mockRequest(() => {

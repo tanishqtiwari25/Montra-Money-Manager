@@ -1,5 +1,5 @@
 import { ApiError, type RequestOptions } from './types';
-const PREFIX = 'wealthpilot.demo.v1.';
+const PREFIX = 'wealthpilot.demo.customer.v2.';
 let failureCount = 0;
 const resetters = new Set<() => void>();
 const resources = new Map<string, { read: () => unknown[]; initial: () => unknown[]; write: (items: unknown[]) => void }>();

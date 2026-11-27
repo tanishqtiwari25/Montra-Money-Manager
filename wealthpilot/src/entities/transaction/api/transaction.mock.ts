@@ -2,18 +2,18 @@ import { ApiError, mockCollection, mockRequest, paginate, requireDate, requirePa
 import type { Transaction, TransactionApi, TransactionInput } from '../model/types';
 function seedTransactions(): Transaction[] {
   const entries = [
-    ['Salary · Acme Studio', 60000, 'income', 'salary', 'hdfc', 1],
+    ['Salary · Northstar Design Studio', 60000, 'income', 'salary', 'hdfc', 1],
     ['Apartment rent', 18000, 'expense', 'housing', 'hdfc', 1],
-    ['Swiggy · weekend dinner', 1200, 'expense', 'food', 'hdfc-credit', 2],
-    ['Zomato · team lunch', 1600, 'expense', 'food', 'icici-credit', 3],
+    ['The Oak Table · weekend dinner', 1200, 'expense', 'food', 'hdfc-credit', 2],
+    ['Green Kitchen · team lunch', 1600, 'expense', 'food', 'icici-credit', 3],
     ['Amazon · home essentials', 4500, 'expense', 'shopping', 'hdfc-credit', 4],
     ['Netflix subscription', 649, 'expense', 'subscriptions', 'icici-credit', 4],
-    ['Indian Oil · fuel', 2400, 'expense', 'transport', 'icici-debit', 5],
-    ['UPI · electricity and internet', 1800, 'expense', 'utilities', 'sbi', 5],
-    ['UPI · local groceries', 2200, 'expense', 'food', 'paytm', 6],
-    ['SIP · index fund contribution', 6000, 'transfer', 'investment', 'hdfc', 6],
+    ['Shell · fuel', 2400, 'expense', 'transport', 'icici-debit', 5],
+    ['City Utilities · electricity and internet', 1800, 'expense', 'utilities', 'sbi', 5],
+    ['Whole Foods · groceries', 2200, 'expense', 'food', 'paytm', 6],
+    ['Horizon · index fund contribution', 6000, 'transfer', 'investment', 'hdfc', 6],
     ['Personal loan EMI', 5800, 'expense', 'emi', 'hdfc', 7],
-    ['UPI · family support', 2500, 'expense', 'family', 'sbi', 7],
+    ['Transfer to Emma Bennett', 2500, 'expense', 'family', 'sbi', 7],
   ] as const;
   return Array.from({ length: 12 }, (_, monthIndex) => {
     const date = new Date(Date.UTC(2025, 10 + monthIndex, 1));
