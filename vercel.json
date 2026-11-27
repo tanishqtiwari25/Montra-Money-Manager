@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm --prefix wealthpilot ci --include=dev",
+  "buildCommand": "npm --prefix wealthpilot run build",
+  "outputDirectory": "wealthpilot/dist",
+  "rewrites": [{ "source": "/((?!assets/|favicon.svg).*)", "destination": "/index.html" }]
+}
